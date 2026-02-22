@@ -1,0 +1,13 @@
+# System
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Keep releases directory but ignore actual zip files from version control
+# (add them manually with: git add -f releases/tanegi.zip)
+# releases/*.zip

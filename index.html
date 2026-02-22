@@ -1,0 +1,2447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANEGI — Post-Quantum Anonymous Network</title>
+<meta name="description" content="Tanegi is an anonymous P2P network with triple-hybrid post-quantum cryptography, onion routing, and Signal-protocol messaging.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:        #000000;
+  --bg1:       #040a04;
+  --bg2:       #071007;
+  --bg3:       #0a1a0a;
+  --bg4:       #0d2510;
+  --green:     #00ff41;
+  --green2:    #00e039;
+  --green3:    #39ff14;
+  --green-dim: #00c832;
+  --green-dk:  #1a4d1a;
+  --green-dkk: #0d2d0d;
+  --border:    rgba(0,255,65,.18);
+  --border2:   rgba(0,255,65,.35);
+  --text:      #d4e8d4;
+  --text2:     #8ba88b;
+  --text3:     #4d6b4d;
+  --white:     #f0f8f0;
+  --font:      'Space Grotesk', sans-serif;
+  --mono:      'JetBrains Mono', monospace;
+  --title:     'Syne', sans-serif;
+  --glow:      0 0 20px rgba(0,255,65,.4), 0 0 60px rgba(0,255,65,.15);
+  --glow2:     0 0 40px rgba(0,255,65,.6), 0 0 100px rgba(0,255,65,.2);
+}
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-weight: 500;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+::selection { background: rgba(0,255,65,.25); color: var(--green); }
+a { color: var(--green); text-decoration: none; transition: color .2s; }
+a:hover { color: var(--green3); }
+img { max-width: 100%; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+/* ─── SCROLLBAR ────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--green-dk); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--green); }
+
+/* ─── MATRIX CANVAS (hero background) ─────────────────────────────── */
+#matrix-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: .07;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── GRID OVERLAY ─────────────────────────────────────────────────── */
+.grid-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image:
+    linear-gradient(rgba(0,255,65,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,65,.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── NAVIGATION ───────────────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 1rem 0;
+  transition: all .3s ease;
+}
+nav.scrolled {
+  background: rgba(0,0,0,.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-family: var(--title);
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: var(--green);
+  text-shadow: var(--glow);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.logo-dot {
+  width: 8px; height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: var(--glow);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: .7; }
+}
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+}
+.nav-links a {
+  font-size: .85rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text2);
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--green); }
+.nav-cta {
+  background: transparent;
+  border: 1.5px solid var(--green);
+  color: var(--green) !important;
+  padding: .5rem 1.4rem;
+  border-radius: 4px;
+  font-size: .8rem !important;
+  font-weight: 700 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase;
+  transition: all .25s !important;
+}
+.nav-cta:hover {
+  background: var(--green) !important;
+  color: var(--bg) !important;
+  box-shadow: var(--glow);
+}
+
+/* ─── HERO ─────────────────────────────────────────────────────────── */
+#hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8rem 2rem 6rem;
+  overflow: hidden;
+  z-index: 1;
+}
+.hero-bg-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px; height: 900px;
+  background: radial-gradient(ellipse, rgba(0,255,65,.06) 0%, transparent 70%);
+  pointer-events: none;
+  animation: bg-breathe 6s ease-in-out infinite;
+}
+@keyframes bg-breathe {
+  0%,100% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  50% { opacity: .6; transform: translate(-50%,-50%) scale(1.1); }
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  border: 1px solid var(--border2);
+  padding: .35rem 1rem;
+  border-radius: 100px;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 2.5rem;
+  animation: fade-up .8s ease both;
+  background: rgba(0,255,65,.05);
+}
+.badge-blink {
+  width: 6px; height: 6px;
+  background: var(--green3);
+  border-radius: 50%;
+  animation: blink 1.2s step-end infinite;
+  box-shadow: 0 0 8px var(--green3);
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.hero-title {
+  font-family: var(--title);
+  font-size: clamp(3.5rem, 8vw, 7.5rem);
+  font-weight: 800;
+  line-height: .95;
+  letter-spacing: -.02em;
+  margin-bottom: 1.5rem;
+  animation: fade-up .8s .15s ease both;
+}
+.hero-title .line1 { display: block; color: var(--white); }
+.hero-title .line2 {
+  display: block;
+  color: var(--green);
+  text-shadow: var(--glow2);
+  position: relative;
+}
+/* Glitch effect */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  color: var(--green);
+  text-shadow: var(--glow2);
+}
+.glitch::before {
+  animation: glitch-1 4s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  transform: translate(-3px);
+  color: #00ffaa;
+  text-shadow: 0 0 20px rgba(0,255,170,.5);
+}
+.glitch::after {
+  animation: glitch-2 4s infinite;
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+  transform: translate(3px);
+  color: #00aaff;
+  text-shadow: 0 0 20px rgba(0,170,255,.5);
+}
+@keyframes glitch-1 {
+  0%,90%,100%{transform:translate(-3px) skewX(0)} 91%{transform:translate(5px) skewX(-2deg)}
+  92%{transform:translate(-5px) skewX(2deg)} 93%{transform:translate(3px) skewX(0)}
+}
+@keyframes glitch-2 {
+  0%,93%,100%{transform:translate(3px) skewX(0)} 94%{transform:translate(-5px) skewX(3deg)}
+  95%{transform:translate(5px) skewX(-3deg)} 96%{transform:translate(-3px) skewX(0)}
+}
+.hero-sub {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: var(--text2);
+  max-width: 640px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+  font-weight: 500;
+  animation: fade-up .8s .3s ease both;
+}
+.hero-sub strong { color: var(--green); font-weight: 700; }
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fade-up .8s .45s ease both;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  background: var(--green);
+  color: var(--bg) !important;
+  padding: .9rem 2.2rem;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  transition: all .25s;
+  box-shadow: 0 0 30px rgba(0,255,65,.3);
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: -100%; left: -100%;
+  width: 300%; height: 300%;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,.15) 50%, transparent 60%);
+  transition: transform .5s;
+  transform: translateX(-100%) translateY(-100%) rotate(45deg);
+}
+.btn-primary:hover { box-shadow: var(--glow2); transform: translateY(-2px); }
+.btn-primary:hover::before { transform: translateX(30%) translateY(30%) rotate(45deg); }
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  background: transparent;
+  border: 1.5px solid var(--border2);
+  color: var(--text) !important;
+  padding: .9rem 2.2rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  transition: all .25s;
+}
+.btn-secondary:hover {
+  border-color: var(--green);
+  color: var(--green) !important;
+  background: rgba(0,255,65,.06);
+}
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  margin-top: 5rem;
+  flex-wrap: wrap;
+  animation: fade-up .8s .6s ease both;
+}
+.hero-stat { text-align: center; }
+.hero-stat-num {
+  font-family: var(--title);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--green);
+  text-shadow: var(--glow);
+  line-height: 1;
+}
+.hero-stat-label {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-top: .3rem;
+}
+.hero-divider {
+  width: 1px;
+  height: 50px;
+  background: var(--border);
+  align-self: center;
+}
+@keyframes fade-up {
+  from { opacity:0; transform: translateY(30px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* ─── SECTION BASE ─────────────────────────────────────────────────── */
+section { position: relative; z-index: 1; }
+.section-label {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 1rem;
+  padding: .3rem .8rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: rgba(0,255,65,.06);
+}
+.section-title {
+  font-family: var(--title);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+}
+.section-title .accent { color: var(--green); }
+.section-desc {
+  color: var(--text2);
+  font-size: 1.05rem;
+  max-width: 560px;
+  line-height: 1.7;
+  margin-top: 1rem;
+}
+
+/* ─── REVEAL ON SCROLL ─────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: .1s; }
+.reveal-delay-2 { transition-delay: .2s; }
+.reveal-delay-3 { transition-delay: .3s; }
+.reveal-delay-4 { transition-delay: .4s; }
+.reveal-delay-5 { transition-delay: .5s; }
+
+/* ─── SEPARATOR ────────────────────────────────────────────────────── */
+.sep {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+  margin: 0;
+}
+.sep-glow {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--green-dim), transparent);
+  box-shadow: 0 0 20px rgba(0,200,50,.3);
+  margin: 0;
+}
+
+/* ─── SECTION: ABOUT / INTRO ───────────────────────────────────────── */
+#about {
+  padding: 8rem 0 6rem;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+}
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+.about-text {}
+.about-visual {
+  position: relative;
+}
+.circuit-box {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  background: rgba(0,255,65,.02);
+  position: relative;
+  overflow: hidden;
+}
+.circuit-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--green), transparent);
+  animation: scan-line 3s linear infinite;
+}
+@keyframes scan-line { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+.circuit-header {
+  font-family: var(--mono);
+  font-size: .8rem;
+  color: var(--green);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.circuit-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: var(--glow); }
+.code-line {
+  font-family: var(--mono);
+  font-size: .78rem;
+  color: var(--text2);
+  padding: .25rem 0;
+  border-bottom: 1px solid rgba(0,255,65,.04);
+}
+.code-line .kw { color: var(--green); }
+.code-line .str { color: #79c0ff; }
+.code-line .num { color: #ffa657; }
+.code-line .cmt { color: var(--text3); font-style: italic; }
+.terminal-cursor {
+  display: inline-block;
+  width: 8px; height: 14px;
+  background: var(--green);
+  vertical-align: middle;
+  animation: blink 1s step-end infinite;
+}
+
+/* ─── SECTION: FEATURES ────────────────────────────────────────────── */
+#features {
+  padding: 8rem 0;
+  background: var(--bg1);
+}
+.features-intro {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.feature-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2rem;
+  background: var(--bg2);
+  transition: all .3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--green-dim), transparent);
+  transform: scaleX(0);
+  transition: transform .4s ease;
+}
+.feature-card:hover {
+  border-color: var(--border2);
+  background: rgba(0,255,65,.04);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,.5), 0 0 40px rgba(0,255,65,.06);
+}
+.feature-card:hover::before { transform: scaleX(1); }
+.feature-icon {
+  width: 48px; height: 48px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  background: rgba(0,255,65,.06);
+  transition: all .3s;
+}
+.feature-card:hover .feature-icon {
+  background: rgba(0,255,65,.12);
+  box-shadow: var(--glow);
+}
+.feature-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: .6rem;
+  letter-spacing: -.01em;
+}
+.feature-desc {
+  font-size: .88rem;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.feature-tag {
+  display: inline-block;
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--green);
+  border: 1px solid var(--border);
+  padding: .2rem .5rem;
+  border-radius: 3px;
+  margin-top: 1rem;
+  background: rgba(0,255,65,.04);
+}
+
+/* ─── SECTION: CRYPTO ──────────────────────────────────────────────── */
+#crypto {
+  padding: 8rem 0;
+  background: linear-gradient(180deg, var(--bg1) 0%, var(--bg3) 100%);
+}
+.crypto-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+.crypto-layers { position: relative; }
+.crypto-layer {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg2);
+  position: relative;
+  transition: all .3s;
+  cursor: default;
+}
+.crypto-layer:hover {
+  border-color: var(--border2);
+  background: rgba(0,255,65,.04);
+  box-shadow: 0 0 30px rgba(0,255,65,.06);
+}
+.layer-num {
+  font-family: var(--mono);
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--text3);
+  width: 24px;
+  flex-shrink: 0;
+}
+.layer-info { flex: 1; }
+.layer-name {
+  font-size: .92rem;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -.01em;
+}
+.layer-detail {
+  font-family: var(--mono);
+  font-size: .7rem;
+  color: var(--green-dim);
+  margin-top: .15rem;
+}
+.layer-badge {
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .2rem .5rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.badge-pq { background: rgba(57,255,20,.12); color: #39ff14; border: 1px solid rgba(57,255,20,.25); }
+.badge-std { background: rgba(121,192,255,.1); color: #79c0ff; border: 1px solid rgba(121,192,255,.2); }
+.badge-custom { background: rgba(255,165,0,.1); color: #ffa657; border: 1px solid rgba(255,165,0,.2); }
+.crypto-connector {
+  display: flex;
+  justify-content: center;
+  margin: -.2rem 0;
+  color: var(--border2);
+  font-family: var(--mono);
+  font-size: .8rem;
+}
+.crypto-info {}
+.crypto-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.crypto-stat {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.2rem;
+  background: var(--bg2);
+  text-align: center;
+  transition: all .3s;
+}
+.crypto-stat:hover {
+  border-color: var(--border2);
+  background: rgba(0,255,65,.04);
+}
+.crypto-stat-num {
+  font-family: var(--mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--green);
+  text-shadow: var(--glow);
+  line-height: 1;
+  margin-bottom: .3rem;
+}
+.crypto-stat-label {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.crypto-props {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+.crypto-prop {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  font-size: .85rem;
+  color: var(--text2);
+}
+.prop-check {
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  background: rgba(0,255,65,.12);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green);
+  font-size: .65rem;
+  flex-shrink: 0;
+}
+
+/* ─── SECTION: NETWORK ARCHITECTURE ───────────────────────────────── */
+#architecture {
+  padding: 8rem 0;
+  background: var(--bg3);
+}
+.arch-intro { text-align: center; margin-bottom: 5rem; }
+.arch-diagram {
+  max-width: 860px;
+  margin: 0 auto;
+  position: relative;
+}
+.arch-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  position: relative;
+}
+.arch-node {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+.arch-node-box {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  background: var(--bg2);
+  position: relative;
+  overflow: hidden;
+  transition: all .3s;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+}
+.arch-node-box::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  transition: opacity .3s;
+}
+.arch-node:nth-child(1) .arch-node-box::before { background: #79c0ff; }
+.arch-node:nth-child(3) .arch-node-box::before { background: var(--green); }
+.arch-node:nth-child(5) .arch-node-box::before { background: var(--green); }
+.arch-node:nth-child(7) .arch-node-box::before { background: var(--green); }
+.arch-node:nth-child(9) .arch-node-box::before { background: #ffa657; }
+.arch-node-box:hover {
+  border-color: var(--border2);
+  background: rgba(0,255,65,.05);
+  transform: translateY(-4px);
+}
+.arch-node-icon { font-size: 1.6rem; }
+.arch-node-name {
+  font-size: .78rem;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.arch-node-desc {
+  font-family: var(--mono);
+  font-size: .62rem;
+  color: var(--text3);
+}
+.arch-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 .2rem;
+  color: var(--green-dim);
+  font-size: .85rem;
+  flex-shrink: 0;
+  position: relative;
+  top: -10px;
+}
+.arch-arrow-animated {
+  animation: arrow-flow 2s linear infinite;
+}
+@keyframes arrow-flow {
+  0% { opacity: .3; transform: translateX(-3px); }
+  50% { opacity: 1; transform: translateX(3px); }
+  100% { opacity: .3; transform: translateX(-3px); }
+}
+.arch-hops {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 3rem;
+}
+.arch-hop-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .8rem;
+  color: var(--text2);
+  font-weight: 600;
+}
+.hop-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.hop-guard { background: #79c0ff; box-shadow: 0 0 8px rgba(121,192,255,.5); }
+.hop-middle { background: var(--green); box-shadow: var(--glow); }
+.hop-exit { background: #ffa657; box-shadow: 0 0 8px rgba(255,165,0,.5); }
+
+/* Components grid */
+.components-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-top: 5rem;
+}
+.component-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem 1rem;
+  background: var(--bg2);
+  text-align: center;
+  transition: all .3s;
+}
+.component-card:hover {
+  border-color: var(--border2);
+  background: rgba(0,255,65,.04);
+  box-shadow: 0 0 20px rgba(0,255,65,.06);
+}
+.component-icon { font-size: 1.4rem; margin-bottom: .8rem; }
+.component-name {
+  font-family: var(--mono);
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: .3rem;
+}
+.component-desc { font-size: .7rem; color: var(--text3); line-height: 1.4; }
+
+/* ─── SECTION: PRIVACY ─────────────────────────────────────────────── */
+#privacy {
+  padding: 8rem 0;
+  background: linear-gradient(180deg, var(--bg3) 0%, var(--bg1) 100%);
+}
+.privacy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+.privacy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.privacy-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.2rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg2);
+  transition: all .3s;
+}
+.privacy-item:hover {
+  border-color: var(--border2);
+  background: rgba(0,255,65,.03);
+  transform: translateX(4px);
+}
+.privacy-icon {
+  width: 36px; height: 36px;
+  background: rgba(0,255,65,.08);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.privacy-item-title {
+  font-size: .92rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: .2rem;
+}
+.privacy-item-desc { font-size: .82rem; color: var(--text2); line-height: 1.5; }
+.privacy-terminal {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #050a05;
+  box-shadow: 0 0 60px rgba(0,255,65,.06);
+}
+.terminal-bar {
+  background: var(--bg3);
+  padding: .7rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  border-bottom: 1px solid var(--border);
+}
+.terminal-btn {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.terminal-btn-r { background: #ff5f57; }
+.terminal-btn-y { background: #ffbd2e; }
+.terminal-btn-g { background: #28c840; }
+.terminal-title {
+  font-family: var(--mono);
+  font-size: .72rem;
+  color: var(--text3);
+  margin-left: .5rem;
+}
+.terminal-body {
+  padding: 1.5rem;
+  font-family: var(--mono);
+  font-size: .78rem;
+  line-height: 1.7;
+  min-height: 320px;
+}
+.t-prompt { color: var(--green); }
+.t-cmd { color: var(--white); }
+.t-output { color: var(--text2); }
+.t-success { color: #39ff14; }
+.t-warn { color: #ffa657; }
+.t-info { color: #79c0ff; }
+.t-empty { height: .4em; }
+.typing-effect {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--green);
+  animation: typing 2s steps(30) forwards, blink-cursor .75s step-end infinite;
+  width: 0;
+}
+@keyframes typing { to { width: 100%; } }
+@keyframes blink-cursor { 0%,100%{border-color:var(--green)} 50%{border-color:transparent} }
+
+/* ─── SECTION: PERFORMANCE ─────────────────────────────────────────── */
+#performance {
+  padding: 8rem 0;
+  background: var(--bg1);
+}
+.perf-intro { text-align: center; margin-bottom: 5rem; }
+.perf-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+.perf-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2rem 1.5rem;
+  background: var(--bg2);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all .3s;
+}
+.perf-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--green);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .4s ease;
+}
+.perf-card:hover { border-color: var(--border2); background: rgba(0,255,65,.04); }
+.perf-card:hover::after { transform: scaleX(1); }
+.perf-num {
+  font-family: var(--title);
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--green);
+  text-shadow: var(--glow);
+  line-height: 1;
+  counter-reset: none;
+}
+.perf-unit {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--green-dim);
+}
+.perf-label {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-top: .5rem;
+}
+.perf-desc {
+  font-size: .78rem;
+  color: var(--text2);
+  margin-top: .5rem;
+}
+/* Progress bars */
+.perf-bars { max-width: 700px; margin: 0 auto; }
+.perf-bar-item { margin-bottom: 1.5rem; }
+.perf-bar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: .5rem;
+}
+.perf-bar-name { font-size: .82rem; font-weight: 700; color: var(--text); }
+.perf-bar-value { font-family: var(--mono); font-size: .78rem; color: var(--green); }
+.perf-bar-track {
+  height: 6px;
+  background: rgba(0,255,65,.06);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.perf-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-dk), var(--green));
+  border-radius: 3px;
+  width: 0;
+  transition: width 1.5s ease;
+  box-shadow: 0 0 10px rgba(0,255,65,.3);
+}
+
+/* ─── SECTION: COMPARISON ──────────────────────────────────────────── */
+#compare {
+  padding: 8rem 0;
+  background: var(--bg2);
+}
+.compare-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg1);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+thead th {
+  padding: 1.2rem 1.5rem;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+thead th:first-child { text-align: left; }
+th.tanegi-col {
+  color: var(--green);
+  background: rgba(0,255,65,.04);
+  text-shadow: 0 0 10px rgba(0,255,65,.3);
+}
+tbody tr {
+  border-bottom: 1px solid rgba(0,255,65,.05);
+  transition: background .2s;
+}
+tbody tr:hover { background: rgba(0,255,65,.02); }
+tbody tr:last-child { border-bottom: none; }
+td {
+  padding: 1rem 1.5rem;
+  font-size: .85rem;
+  color: var(--text2);
+  text-align: center;
+}
+td:first-child { text-align: left; color: var(--text); font-weight: 600; }
+.td-tanegi { background: rgba(0,255,65,.03); color: var(--green) !important; font-weight: 700; }
+.check { color: var(--green); font-size: 1rem; }
+.cross { color: #666; font-size: 1rem; }
+.partial { color: #ffa657; font-size: .8rem; }
+
+/* ─── SECTION: DOWNLOAD ────────────────────────────────────────────── */
+#download {
+  padding: 8rem 0;
+  background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+}
+.download-wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+.download-box {
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 3.5rem;
+  background: var(--bg2);
+  position: relative;
+  overflow: hidden;
+  margin-top: 3rem;
+  box-shadow: 0 0 80px rgba(0,255,65,.06);
+}
+.download-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--green), transparent);
+}
+.version-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  border: 1px solid var(--border2);
+  padding: .4rem 1rem;
+  border-radius: 100px;
+  font-family: var(--mono);
+  font-size: .8rem;
+  color: var(--green);
+  margin-bottom: 1.5rem;
+  background: rgba(0,255,65,.06);
+}
+.dl-version-label { font-size: .65rem; color: var(--text3); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.dl-title {
+  font-family: var(--title);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: .8rem;
+}
+.dl-subtitle { font-size: .95rem; color: var(--text2); margin-bottom: 2.5rem; }
+.dl-meta {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+.dl-meta-item {
+  text-align: center;
+}
+.dl-meta-val {
+  font-family: var(--mono);
+  font-size: .9rem;
+  color: var(--green);
+  font-weight: 700;
+}
+.dl-meta-key {
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-top: .2rem;
+}
+.dl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .8rem;
+  background: var(--green);
+  color: #000 !important;
+  padding: 1.1rem 3rem;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  transition: all .25s;
+  box-shadow: 0 0 40px rgba(0,255,65,.35);
+  width: 100%;
+  max-width: 380px;
+  position: relative;
+  overflow: hidden;
+}
+.dl-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
+  background: rgba(255,255,255,.15);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width .5s, height .5s;
+}
+.dl-btn:hover {
+  box-shadow: 0 0 60px rgba(0,255,65,.5);
+  transform: translateY(-2px);
+}
+.dl-btn:hover::before { width: 300px; height: 300px; }
+.dl-arrow {
+  display: inline-block;
+  animation: dl-bounce .9s ease-in-out infinite;
+}
+@keyframes dl-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(4px)} }
+.dl-note {
+  margin-top: 1.5rem;
+  font-size: .78rem;
+  color: var(--text3);
+}
+.dl-platforms {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+.platform-tag {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--text2);
+  padding: .3rem .7rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg3);
+}
+.no-file-notice {
+  display: none;
+  margin-top: 1rem;
+  padding: 1rem 1.5rem;
+  border: 1px solid rgba(255,165,0,.3);
+  border-radius: 8px;
+  background: rgba(255,165,0,.06);
+  color: #ffa657;
+  font-size: .82rem;
+  line-height: 1.5;
+}
+.no-file-notice.visible { display: block; }
+
+/* ─── SECTION: GETTING STARTED ─────────────────────────────────────── */
+#start {
+  padding: 8rem 0;
+  background: var(--bg);
+}
+.start-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 5rem;
+  align-items: start;
+}
+.start-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  counter-reset: step;
+}
+.start-step {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg2);
+  transition: all .3s;
+}
+.start-step:hover {
+  border-color: var(--border2);
+  background: rgba(0,255,65,.03);
+}
+.step-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(0,255,65,.1);
+  border: 1.5px solid var(--green-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--green);
+  flex-shrink: 0;
+}
+.step-title { font-size: .95rem; font-weight: 800; color: var(--white); margin-bottom: .3rem; }
+.step-desc { font-size: .82rem; color: var(--text2); line-height: 1.5; }
+.step-code {
+  font-family: var(--mono);
+  font-size: .75rem;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: .5rem .8rem;
+  margin-top: .5rem;
+  color: var(--green);
+  display: block;
+}
+.start-terminal {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #020802;
+  box-shadow: 0 0 60px rgba(0,255,65,.08);
+  position: sticky;
+  top: 6rem;
+}
+.terminal-content {
+  padding: 1.5rem;
+  font-family: var(--mono);
+  font-size: .78rem;
+  line-height: 1.8;
+  min-height: 420px;
+  overflow: hidden;
+}
+.t-line { display: block; }
+.fade-in-line {
+  opacity: 0;
+  animation: fadeInLine .3s ease forwards;
+}
+@keyframes fadeInLine { to { opacity: 1; } }
+
+/* ─── FOOTER ───────────────────────────────────────────────────────── */
+footer {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 4rem 0 2rem;
+  position: relative;
+  z-index: 1;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+.footer-brand {}
+.footer-logo {
+  font-family: var(--title);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--green);
+  text-shadow: var(--glow);
+  margin-bottom: .8rem;
+  letter-spacing: .1em;
+}
+.footer-tagline {
+  font-size: .82rem;
+  color: var(--text3);
+  line-height: 1.6;
+  max-width: 260px;
+}
+.footer-col-title {
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 1rem;
+}
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+.footer-links a { font-size: .85rem; color: var(--text2); transition: color .2s; }
+.footer-links a:hover { color: var(--green); }
+.footer-bottom {
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-copy {
+  font-size: .78rem;
+  color: var(--text3);
+}
+.footer-copy .accent { color: var(--green); }
+.footer-legal {
+  display: flex;
+  gap: 1.5rem;
+}
+.footer-legal a { font-size: .75rem; color: var(--text3); }
+.footer-legal a:hover { color: var(--text2); }
+
+/* ─── WARNING BANNER ───────────────────────────────────────────────── */
+.warning-banner {
+  background: rgba(255,165,0,.05);
+  border: 1px solid rgba(255,165,0,.2);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: .8rem;
+  margin-top: 3rem;
+  font-size: .82rem;
+  color: var(--text2);
+  line-height: 1.5;
+}
+.warning-icon { font-size: 1rem; flex-shrink: 0; color: #ffa657; }
+
+/* ─── RESPONSIVE ───────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .about-grid, .crypto-grid, .privacy-grid, .start-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .perf-grid { grid-template-columns: repeat(2, 1fr); }
+  .components-grid { grid-template-columns: repeat(3, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .arch-flow { flex-wrap: wrap; gap: .5rem; justify-content: center; }
+  .arch-arrow { display: none; }
+}
+@media (max-width: 768px) {
+  .features-grid { grid-template-columns: 1fr; }
+  .crypto-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .perf-grid { grid-template-columns: 1fr 1fr; }
+  .components-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .compare-table-wrap table { min-width: 600px; }
+  .hero-stats { gap: 1.5rem; }
+  .hero-divider { display: none; }
+  .download-box { padding: 2rem 1.5rem; }
+}
+
+/* ─── SCANLINE EFFECT ──────────────────────────────────────────────── */
+.scanlines {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,.03) 2px,
+    rgba(0,0,0,.03) 4px
+  );
+  opacity: .4;
+}
+
+/* ─── MOBILE NAV ───────────────────────────────────────────────────── */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  padding: .4rem .6rem;
+  cursor: pointer;
+  color: var(--green);
+  font-size: 1.1rem;
+  border-radius: 4px;
+}
+@media (max-width: 768px) { .mobile-menu-btn { display: flex; } }
+</style>
+</head>
+<body>
+
+<!-- Matrix Rain Canvas -->
+<canvas id="matrix-canvas"></canvas>
+<div class="grid-overlay"></div>
+<div class="scanlines"></div>
+
+<!-- ── NAVIGATION ─────────────────────────────────────────────────── -->
+<nav id="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="logo">
+        <div class="logo-dot"></div>
+        TANEGI
+      </div>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#crypto">Crypto</a></li>
+        <li><a href="#architecture">Network</a></li>
+        <li><a href="#privacy">Privacy</a></li>
+        <li><a href="#compare">vs Tor</a></li>
+        <li><a href="#download" class="nav-cta">Download</a></li>
+      </ul>
+      <button class="mobile-menu-btn" onclick="scrollTo({top:document.getElementById('download').offsetTop,behavior:'smooth'})">⬇</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ──────────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-bg-glow"></div>
+  <div class="container">
+    <div class="hero-badge">
+      <div class="badge-blink"></div>
+      v1.0.0 — Post-Quantum Anonymous Network
+    </div>
+    <h1 class="hero-title">
+      <span class="line1">Privacy Beyond</span>
+      <span class="line2"><span class="glitch" data-text="Quantum">Quantum</span></span>
+    </h1>
+    <p class="hero-sub">
+      <strong>Tanegi</strong> — анонимная P2P-сеть с тройным гибридным шифрованием:<br>
+      Kyber-1024 (пост-квантовый) + ChaCha20-Poly1305 + алгоритм Tanegi.<br>
+      Луковая маршрутизация 3–7 хопов. Написана на <strong>Rust</strong>.
+    </p>
+    <div class="hero-actions">
+      <a href="#download" class="btn-primary">
+        ⬇ &nbsp;Скачать Tanegi
+      </a>
+      <a href="#features" class="btn-secondary">
+        Изучить возможности →
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="1024">1024</div>
+        <div class="hero-stat-label">Kyber Bits</div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="7">3–7</div>
+        <div class="hero-stat-label">Onion Hops</div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="256">256</div>
+        <div class="hero-stat-label">Key Bits</div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="100">100</div>
+        <div class="hero-stat-label">MB/s Down</div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">2.6<span style="font-size:1.2rem">MB</span></div>
+        <div class="hero-stat-label">Binary Size</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep-glow"></div>
+
+<!-- ── ABOUT ─────────────────────────────────────────────────────── -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <div class="section-label">О проекте</div>
+        <h2 class="section-title">Анонимность <span class="accent">нового поколения</span></h2>
+        <p class="section-desc">
+          Tanegi — это децентрализованная P2P-сеть с луковой маршрутизацией,
+          созданная полностью на Rust. В отличие от Tor, Tanegi использует
+          пост-квантовый KEM (Kyber-1024) и собственный математический алгоритм,
+          основанный на задаче числа 10958.
+        </p>
+        <p class="section-desc" style="margin-top:1rem">
+          Протокол Double Ratchet (как в Signal) обеспечивает совершенную
+          прямую секретность в чате. Kademlia DHT организует распределённую
+          хранилищную систему с расширенным кодированием Reed-Solomon.
+        </p>
+        <div class="warning-banner" style="margin-top:2rem">
+          <div class="warning-icon">⚠</div>
+          <div>
+            <strong style="color:#ffa657">Beta-версия.</strong>
+            Проект находится в стадии разработки. Не использовать для
+            защиты критически важных данных в production.
+          </div>
+        </div>
+      </div>
+      <div class="about-visual reveal reveal-delay-2">
+        <div class="circuit-box">
+          <div class="circuit-header">
+            <div class="circuit-dot"></div>
+            tanegi-core / network / handshake
+          </div>
+          <div class="code-line"><span class="kw">let</span> keypair = <span class="str">X25519</span>::generate(&<span class="kw">mut</span> OsRng);</div>
+          <div class="code-line"><span class="kw">let</span> kyber = <span class="str">Kyber1024</span>::keygen();</div>
+          <div class="code-line"><span class="kw">let</span> shared = <span class="str">HybridKEM</span>::encapsulate(</div>
+          <div class="code-line">&nbsp;&nbsp;&amp;peer_pub, <span class="num">OrderMode::Random</span></div>
+          <div class="code-line">); <span class="cmt">// ChaCha-first or Kyber-first</span></div>
+          <div class="code-line">&nbsp;</div>
+          <div class="code-line"><span class="kw">let</span> ratchet = <span class="str">DoubleRatchet</span>::init(shared);</div>
+          <div class="code-line"><span class="cmt">// Forward secrecy from message 1</span></div>
+          <div class="code-line">&nbsp;</div>
+          <div class="code-line"><span class="kw">let</span> circuit = <span class="str">OnionBuilder</span>::new()</div>
+          <div class="code-line">&nbsp;&nbsp;.hops(<span class="num">3</span>..<span class="num">7</span>)</div>
+          <div class="code-line">&nbsp;&nbsp;.subnet_diversity(<span class="str">"/16"</span>)</div>
+          <div class="code-line">&nbsp;&nbsp;.build()?; <span class="cmt">// anti-Sybil</span></div>
+          <div class="code-line">&nbsp;</div>
+          <div class="code-line t-success">✓ Circuit established — <span class="num">5</span> hops<span class="terminal-cursor"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ── FEATURES ──────────────────────────────────────────────────── -->
+<section id="features">
+  <div class="container">
+    <div class="features-intro reveal">
+      <div class="section-label">Возможности</div>
+      <h2 class="section-title">Полный стек <span class="accent">анонимности</span></h2>
+      <p class="section-desc" style="margin:0 auto">
+        Каждый компонент разработан с нуля с учётом приватности и производительности.
+      </p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-title">Тройное гибридное шифрование</div>
+        <div class="feature-desc">Kyber-1024 (NIST PQ) + ChaCha20-Poly1305 + алгоритм Tanegi. Порядок применения случайный для защиты от криптоанализа.</div>
+        <div class="feature-tag">Post-Quantum</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">🧅</div>
+        <div class="feature-title">Луковая маршрутизация</div>
+        <div class="feature-desc">3–7 хопов с принудительным разнообразием подсетей /16. Ed25519 верификация каждого узла, эфемерные ключи X25519 на каждый хоп.</div>
+        <div class="feature-tag">Anti-Sybil</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">Signal-протокол чата</div>
+        <div class="feature-desc">Double Ratchet + X3DH. Совершенная прямая секретность (PFS). Post-compromise security. Поддержка до 1000 пропущенных ключей.</div>
+        <div class="feature-tag">Double Ratchet</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-title">SOCKS5 + HTTP прокси</div>
+        <div class="feature-desc">RFC 1928 совместимый SOCKS5 прокси на порту 9050. HTTP/HTTPS прокси с CONNECT туннелем. Поддержка UDP ASSOCIATE.</div>
+        <div class="feature-tag">RFC 1928</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">📦</div>
+        <div class="feature-title">Распределённое хранилище</div>
+        <div class="feature-desc">AES-256-GCM шифрование + HKDF. Коды Reed-Solomon (8+4). LZ4 компрессия. По умолчанию 3 GB на узел.</div>
+        <div class="feature-tag">Reed-Solomon</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-title">Kill Switch + DNS защита</div>
+        <div class="feature-desc">iptables kill switch при разрыве туннеля. DoH (RFC 8484) для DNS. Блокировка 23+ трекеров и рекламных доменов. WebRTC leak prevention.</div>
+        <div class="feature-tag">Zero Leaks</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">📡</div>
+        <div class="feature-title">Kademlia DHT</div>
+        <div class="feature-desc">K-bucket size 20. 3 параллельных запроса. До 100 000 элементов, 10 MB хранилища. TTL 24 часа. Sybil защита через PoW.</div>
+        <div class="feature-tag">Kademlia</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">🎭</div>
+        <div class="feature-title">Cover Traffic + Garlic</div>
+        <div class="feature-desc">Адаптивный cover traffic (10% от пропускной способности). Garlic routing — объединение сообщений для защиты от traffic analysis.</div>
+        <div class="feature-tag">Traffic Analysis</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Написан на Rust</div>
+        <div class="feature-desc">Tokio async runtime. Zero-copy операции. Полный LTO. Бинарник 2.6 MB. OsRng для всей криптографии. Zeroize для очистки ключей.</div>
+        <div class="feature-tag">Memory Safe</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ── CRYPTO ─────────────────────────────────────────────────────── -->
+<section id="crypto">
+  <div class="container">
+    <div class="crypto-grid">
+      <div class="reveal">
+        <div class="section-label">Криптография</div>
+        <h2 class="section-title">Слои <span class="accent">шифрования</span></h2>
+        <p class="section-desc">Каждое сообщение проходит через три независимых криптографических слоя.</p>
+        <div style="margin-top:2.5rem">
+          <div class="crypto-layer reveal">
+            <div class="layer-num">L1</div>
+            <div class="layer-info">
+              <div class="layer-name">Tanegi Cipher</div>
+              <div class="layer-detail">Custom block cipher · Задача числа 10958 · ChaCha20-Poly1305 wrapper</div>
+            </div>
+            <span class="layer-badge badge-custom">Custom</span>
+          </div>
+          <div class="crypto-connector">↓ encapsulate</div>
+          <div class="crypto-layer reveal reveal-delay-1">
+            <div class="layer-num">L2</div>
+            <div class="layer-info">
+              <div class="layer-name">Kyber-1024 KEM</div>
+              <div class="layer-detail">NIST PQ standard · 1024-bit security · Lattice-based CRYSTALS</div>
+            </div>
+            <span class="layer-badge badge-pq">Post-Quantum</span>
+          </div>
+          <div class="crypto-connector">↓ encapsulate</div>
+          <div class="crypto-layer reveal reveal-delay-2">
+            <div class="layer-num">L3</div>
+            <div class="layer-info">
+              <div class="layer-name">ChaCha20-Poly1305</div>
+              <div class="layer-detail">256-bit key · 12-byte nonce · 128-bit AEAD tag</div>
+            </div>
+            <span class="layer-badge badge-std">Standard</span>
+          </div>
+          <div class="crypto-connector">↓ sign</div>
+          <div class="crypto-layer reveal reveal-delay-3">
+            <div class="layer-num">ID</div>
+            <div class="layer-info">
+              <div class="layer-name">Ed25519 Identity</div>
+              <div class="layer-detail">RFC 8032 · 64-byte signatures · Anti-MITM circuit auth</div>
+            </div>
+            <span class="layer-badge badge-std">Identity</span>
+          </div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="crypto-stat-grid">
+          <div class="crypto-stat">
+            <div class="crypto-stat-num">256</div>
+            <div class="crypto-stat-label">Key bits (AES/ChaCha)</div>
+          </div>
+          <div class="crypto-stat">
+            <div class="crypto-stat-num">1024</div>
+            <div class="crypto-stat-label">Kyber bits</div>
+          </div>
+          <div class="crypto-stat">
+            <div class="crypto-stat-num">12B</div>
+            <div class="crypto-stat-label">Nonce size</div>
+          </div>
+          <div class="crypto-stat">
+            <div class="crypto-stat-num">128</div>
+            <div class="crypto-stat-label">Auth tag bits</div>
+          </div>
+          <div class="crypto-stat">
+            <div class="crypto-stat-num">32B</div>
+            <div class="crypto-stat-label">X25519 key</div>
+          </div>
+          <div class="crypto-stat">
+            <div class="crypto-stat-num">64B</div>
+            <div class="crypto-stat-label">Ed25519 sig</div>
+          </div>
+        </div>
+        <div class="crypto-props">
+          <div class="crypto-prop"><div class="prop-check">✓</div>Совершенная прямая секретность (PFS)</div>
+          <div class="crypto-prop"><div class="prop-check">✓</div>Post-compromise security</div>
+          <div class="crypto-prop"><div class="prop-check">✓</div>Constant-time сравнение (ct_eq)</div>
+          <div class="crypto-prop"><div class="prop-check">✓</div>OsRng для всей генерации ключей</div>
+          <div class="crypto-prop"><div class="prop-check">✓</div>Zeroize — безопасное стирание памяти</div>
+          <div class="crypto-prop"><div class="prop-check">✓</div>HKDF + SHA3-256/512 key derivation</div>
+          <div class="crypto-prop"><div class="prop-check">✓</div>Replay protection — HMAC-SHA3-256</div>
+          <div class="crypto-prop"><div class="prop-check">✓</div>Квантово-устойчивое хранилище AES-256-GCM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ── ARCHITECTURE ───────────────────────────────────────────────── -->
+<section id="architecture">
+  <div class="container">
+    <div class="arch-intro reveal">
+      <div class="section-label">Архитектура</div>
+      <h2 class="section-title">Путь <span class="accent">пакета</span></h2>
+      <p class="section-desc" style="margin:0 auto">
+        Каждый пакет проходит луковое шифрование и несколько независимых узлов,
+        прежде чем достигнуть назначения.
+      </p>
+    </div>
+    <div class="arch-diagram reveal reveal-delay-1">
+      <div class="arch-flow">
+        <div class="arch-node">
+          <div class="arch-node-box">
+            <div class="arch-node-icon">💻</div>
+            <div class="arch-node-name">You</div>
+            <div class="arch-node-desc">SOCKS5 :9050</div>
+          </div>
+        </div>
+        <div class="arch-arrow"><div class="arch-arrow-animated">→→→</div></div>
+        <div class="arch-node">
+          <div class="arch-node-box">
+            <div class="arch-node-icon">🛡️</div>
+            <div class="arch-node-name">Guard</div>
+            <div class="arch-node-desc">Entry Node</div>
+          </div>
+        </div>
+        <div class="arch-arrow"><div class="arch-arrow-animated">→→→</div></div>
+        <div class="arch-node">
+          <div class="arch-node-box">
+            <div class="arch-node-icon">🔀</div>
+            <div class="arch-node-name">Middle</div>
+            <div class="arch-node-desc">Relay 1</div>
+          </div>
+        </div>
+        <div class="arch-arrow"><div class="arch-arrow-animated">→→→</div></div>
+        <div class="arch-node">
+          <div class="arch-node-box">
+            <div class="arch-node-icon">🔀</div>
+            <div class="arch-node-name">Middle</div>
+            <div class="arch-node-desc">Relay 2+</div>
+          </div>
+        </div>
+        <div class="arch-arrow"><div class="arch-arrow-animated">→→→</div></div>
+        <div class="arch-node">
+          <div class="arch-node-box">
+            <div class="arch-node-icon">🚪</div>
+            <div class="arch-node-name">Exit</div>
+            <div class="arch-node-desc">Clearnet</div>
+          </div>
+        </div>
+        <div class="arch-arrow"><div class="arch-arrow-animated">→→→</div></div>
+        <div class="arch-node">
+          <div class="arch-node-box">
+            <div class="arch-node-icon">🌍</div>
+            <div class="arch-node-name">Internet</div>
+            <div class="arch-node-desc">Destination</div>
+          </div>
+        </div>
+      </div>
+      <div class="arch-hops">
+        <div class="arch-hop-item"><div class="hop-dot hop-guard"></div> Guard — стабильный, высокая пропускная</div>
+        <div class="arch-hop-item"><div class="hop-dot hop-middle"></div> Middle — relay-only, без exit трафика</div>
+        <div class="arch-hop-item"><div class="hop-dot hop-exit"></div> Exit — добровольный, clearnet доступ</div>
+      </div>
+    </div>
+    <div class="components-grid" style="margin-top:5rem">
+      <div class="component-card reveal reveal-delay-1">
+        <div class="component-icon">⚙️</div>
+        <div class="component-name">tanegi-cli</div>
+        <div class="component-desc">TUI интерфейс, CLI, сборка цепочек, аккаунты</div>
+      </div>
+      <div class="component-card reveal reveal-delay-2">
+        <div class="component-icon">🌐</div>
+        <div class="component-name">tanegi-core</div>
+        <div class="component-desc">DHT, транспорт, луковый роутер, garlic</div>
+      </div>
+      <div class="component-card reveal reveal-delay-3">
+        <div class="component-icon">🔒</div>
+        <div class="component-name">tanegi-math</div>
+        <div class="component-desc">Tanegi cipher, Kyber, гибридный KEM</div>
+      </div>
+      <div class="component-card reveal reveal-delay-4">
+        <div class="component-icon">💾</div>
+        <div class="component-name">tanegi-storage</div>
+        <div class="component-desc">AES-GCM, Reed-Solomon, LZ4, DHT-хранилище</div>
+      </div>
+      <div class="component-card reveal reveal-delay-5">
+        <div class="component-icon">🔌</div>
+        <div class="component-name">tanegi-gateway</div>
+        <div class="component-desc">SOCKS5, HTTP proxy, DNS, exit node</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ── PRIVACY ───────────────────────────────────────────────────── -->
+<section id="privacy">
+  <div class="container">
+    <div class="privacy-grid">
+      <div class="reveal">
+        <div class="section-label">Приватность</div>
+        <h2 class="section-title">Нулевая <span class="accent">утечка</span></h2>
+        <p class="section-desc">Многоуровневая защита от деанонимизации на каждом уровне стека.</p>
+        <div class="privacy-list" style="margin-top:2.5rem">
+          <div class="privacy-item">
+            <div class="privacy-icon">🔥</div>
+            <div>
+              <div class="privacy-item-title">Kill Switch</div>
+              <div class="privacy-item-desc">iptables автоматически блокирует весь трафик при разрыве VPN-туннеля. Требует root. Защищает от IP-утечек.</div>
+            </div>
+          </div>
+          <div class="privacy-item">
+            <div class="privacy-icon">🎭</div>
+            <div>
+              <div class="privacy-item-title">Cover Traffic</div>
+              <div class="privacy-item-desc">Адаптивная генерация фиктивного трафика (10% пропускной способности). Защита от traffic analysis.</div>
+            </div>
+          </div>
+          <div class="privacy-item">
+            <div class="privacy-icon">🚫</div>
+            <div>
+              <div class="privacy-item-title">Блокировка трекеров</div>
+              <div class="privacy-item-desc">DNS-блокировка google-analytics, doubleclick, facebook, telemetry Microsoft/Mozilla и 20+ других доменов слежки.</div>
+            </div>
+          </div>
+          <div class="privacy-item">
+            <div class="privacy-icon">📡</div>
+            <div>
+              <div class="privacy-item-title">DoH (DNS over HTTPS)</div>
+              <div class="privacy-item-desc">RFC 8484. Все DNS-запросы зашифрованы. Fallback — DNS через Tanegi-цепочку. Нет DNS-утечек.</div>
+            </div>
+          </div>
+          <div class="privacy-item">
+            <div class="privacy-icon">📹</div>
+            <div>
+              <div class="privacy-item-title">WebRTC Blocking</div>
+              <div class="privacy-item-desc">iptables правила блокируют WebRTC STUN/TURN запросы, которые могут раскрыть реальный IP-адрес.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="privacy-terminal">
+          <div class="terminal-bar">
+            <div class="terminal-btn terminal-btn-r"></div>
+            <div class="terminal-btn terminal-btn-y"></div>
+            <div class="terminal-btn terminal-btn-g"></div>
+            <div class="terminal-title">tanegi — privacy status</div>
+          </div>
+          <div class="terminal-body" id="terminal-privacy">
+            <span class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">sudo tanegi --block-trackers --cover-traffic</span></span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line t-info">▶ Initializing Tanegi Network v1.0.0</span>
+            <span class="t-line t-output">  Loading config: ~/.config/tanegi/config.toml</span>
+            <span class="t-line t-output">  Generating Ed25519 identity key...</span>
+            <span class="t-line t-success">  ✓ Identity: 3a51ed03993824...</span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line t-info">▶ Bootstrapping DHT</span>
+            <span class="t-line t-output">  Connecting to bootstrap nodes...</span>
+            <span class="t-line t-output">  DHT bucket refresh in 15min</span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line t-info">▶ Building onion circuit (5 hops)</span>
+            <span class="t-line t-success">  ✓ Guard  → [DE] 193.x.x.x Ed25519 verified</span>
+            <span class="t-line t-success">  ✓ Middle → [NL] 85.x.x.x  Ed25519 verified</span>
+            <span class="t-line t-success">  ✓ Middle → [SE] 46.x.x.x  Ed25519 verified</span>
+            <span class="t-line t-success">  ✓ Middle → [CH] 178.x.x.x Ed25519 verified</span>
+            <span class="t-line t-success">  ✓ Exit   → [JP] 103.x.x.x Ed25519 verified</span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line t-info">▶ Privacy protections active</span>
+            <span class="t-line t-success">  ✓ Kill switch: iptables configured</span>
+            <span class="t-line t-success">  ✓ DNS: DoH (RFC 8484) active</span>
+            <span class="t-line t-success">  ✓ Cover traffic: 10% BW adaptive</span>
+            <span class="t-line t-success">  ✓ Trackers blocked: 23 domains</span>
+            <span class="t-line t-success">  ✓ WebRTC: blocked via iptables</span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line t-success">▶ SOCKS5 ready on 127.0.0.1:9050<span class="terminal-cursor"></span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ── PERFORMANCE ────────────────────────────────────────────────── -->
+<section id="performance">
+  <div class="container">
+    <div class="perf-intro reveal">
+      <div class="section-label">Производительность</div>
+      <h2 class="section-title">Скорость без <span class="accent">компромиссов</span></h2>
+      <p class="section-desc" style="margin:0 auto">
+        Высокая пропускная способность при полной анонимности.
+      </p>
+    </div>
+    <div class="perf-grid">
+      <div class="perf-card reveal reveal-delay-1">
+        <div class="perf-num" data-target="100">0<span class="perf-unit"> MB/s</span></div>
+        <div class="perf-label">Загрузка</div>
+        <div class="perf-desc">Максимальная скорость скачивания</div>
+      </div>
+      <div class="perf-card reveal reveal-delay-2">
+        <div class="perf-num" data-target="50">0<span class="perf-unit"> MB/s</span></div>
+        <div class="perf-label">Отдача</div>
+        <div class="perf-desc">Максимальная скорость загрузки</div>
+      </div>
+      <div class="perf-card reveal reveal-delay-3">
+        <div class="perf-num" data-target="25">0<span class="perf-unit"> MB/s</span></div>
+        <div class="perf-label">Relay</div>
+        <div class="perf-desc">Пропускная способность ретрансляции</div>
+      </div>
+      <div class="perf-card reveal reveal-delay-4">
+        <div class="perf-num" data-target="1000">0</div>
+        <div class="perf-label">Соединений</div>
+        <div class="perf-desc">Максимум одновременных подключений</div>
+      </div>
+    </div>
+    <div class="perf-bars reveal reveal-delay-2">
+      <div class="perf-bar-item">
+        <div class="perf-bar-header">
+          <div class="perf-bar-name">Шифрование ChaCha20-Poly1305</div>
+          <div class="perf-bar-value">&gt;10 MB/s</div>
+        </div>
+        <div class="perf-bar-track"><div class="perf-bar-fill" data-width="85"></div></div>
+      </div>
+      <div class="perf-bar-item">
+        <div class="perf-bar-header">
+          <div class="perf-bar-name">DHT lookup latency</div>
+          <div class="perf-bar-value">&lt;15s timeout</div>
+        </div>
+        <div class="perf-bar-track"><div class="perf-bar-fill" data-width="70"></div></div>
+      </div>
+      <div class="perf-bar-item">
+        <div class="perf-bar-header">
+          <div class="perf-bar-name">Circuit build time</div>
+          <div class="perf-bar-value">&lt;30s</div>
+        </div>
+        <div class="perf-bar-track"><div class="perf-bar-fill" data-width="78"></div></div>
+      </div>
+      <div class="perf-bar-item">
+        <div class="perf-bar-header">
+          <div class="perf-bar-name">Binary size (stripped, LTO)</div>
+          <div class="perf-bar-value">2.6 MB</div>
+        </div>
+        <div class="perf-bar-track"><div class="perf-bar-fill" data-width="15"></div></div>
+      </div>
+      <div class="perf-bar-item">
+        <div class="perf-bar-header">
+          <div class="perf-bar-name">RAM минимум</div>
+          <div class="perf-bar-value">512 MB</div>
+        </div>
+        <div class="perf-bar-track"><div class="perf-bar-fill" data-width="30"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ── COMPARISON ─────────────────────────────────────────────────── -->
+<section id="compare">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:3rem" class="reveal">
+      <div class="section-label">Сравнение</div>
+      <h2 class="section-title">Tanegi <span class="accent">vs</span> Tor</h2>
+      <p class="section-desc" style="margin:0 auto">Что отличает Tanegi от существующих решений.</p>
+    </div>
+    <div class="compare-table-wrap reveal reveal-delay-1">
+      <table>
+        <thead>
+          <tr>
+            <th>Функция</th>
+            <th class="tanegi-col">⬡ TANEGI</th>
+            <th style="color:var(--text2)">Tor</th>
+            <th style="color:var(--text2)">I2P</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Пост-квантовая криптография</td>
+            <td class="td-tanegi">✓ Kyber-1024</td>
+            <td><span class="cross">✗</span></td>
+            <td><span class="cross">✗</span></td>
+          </tr>
+          <tr>
+            <td>Гибридное шифрование</td>
+            <td class="td-tanegi">✓ 3 алгоритма</td>
+            <td><span class="partial">1 слой</span></td>
+            <td><span class="partial">2 слоя</span></td>
+          </tr>
+          <tr>
+            <td>Signal-протокол (Double Ratchet)</td>
+            <td class="td-tanegi">✓ Встроен</td>
+            <td><span class="cross">✗</span></td>
+            <td><span class="cross">✗</span></td>
+          </tr>
+          <tr>
+            <td>Kill Switch</td>
+            <td class="td-tanegi">✓ iptables</td>
+            <td><span class="partial">Плагин</span></td>
+            <td><span class="cross">✗</span></td>
+          </tr>
+          <tr>
+            <td>Cover Traffic</td>
+            <td class="td-tanegi">✓ Адаптивный</td>
+            <td><span class="partial">Настраиваем</span></td>
+            <td><span class="check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Встроенный DHT</td>
+            <td class="td-tanegi">✓ Kademlia</td>
+            <td><span class="partial">Bridge DB</span></td>
+            <td><span class="check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Распределённое хранилище</td>
+            <td class="td-tanegi">✓ AES-256-GCM</td>
+            <td><span class="cross">✗</span></td>
+            <td><span class="partial">Частично</span></td>
+          </tr>
+          <tr>
+            <td>NAT Traversal (STUN)</td>
+            <td class="td-tanegi">✓ ICE/STUN</td>
+            <td><span class="partial">Частично</span></td>
+            <td><span class="check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Garlic Routing</td>
+            <td class="td-tanegi">✓ Встроен</td>
+            <td><span class="cross">✗</span></td>
+            <td><span class="check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Язык</td>
+            <td class="td-tanegi">Rust (memory safe)</td>
+            <td>C / Python</td>
+            <td>Java</td>
+          </tr>
+          <tr>
+            <td>Размер бинарника</td>
+            <td class="td-tanegi">2.6 MB</td>
+            <td>~50 MB</td>
+            <td>~80 MB</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ── GETTING STARTED ────────────────────────────────────────────── -->
+<section id="start">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:4rem" class="reveal">
+      <div class="section-label">Быстрый старт</div>
+      <h2 class="section-title">Запуск за <span class="accent">3 шага</span></h2>
+    </div>
+    <div class="start-grid">
+      <div class="start-steps">
+        <div class="start-step reveal reveal-delay-1">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Скачайте и распакуйте</div>
+            <div class="step-desc">Скачайте <code style="color:var(--green)">tanegi.zip</code>, распакуйте в удобное место.</div>
+            <code class="step-code">unzip tanegi.zip && cd tanegi/</code>
+          </div>
+        </div>
+        <div class="start-step reveal reveal-delay-2">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Сделайте исполняемым</div>
+            <div class="step-desc">Бинарный файл требует права на исполнение и запуск от root для работы с iptables.</div>
+            <code class="step-code">chmod +x tanegi && sudo ./tanegi</code>
+          </div>
+        </div>
+        <div class="start-step reveal reveal-delay-3">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Настройте SOCKS5 прокси</div>
+            <div class="step-desc">Укажите приложениям (браузер, curl) использовать SOCKS5 прокси <code style="color:var(--green)">127.0.0.1:9050</code>.</div>
+            <code class="step-code">curl --socks5-hostname 127.0.0.1:9050 https://check.torproject.org</code>
+          </div>
+        </div>
+        <div class="start-step reveal reveal-delay-4">
+          <div class="step-num">+</div>
+          <div>
+            <div class="step-title">Дополнительные флаги</div>
+            <div class="step-desc">Включите усиленную защиту приватности.</div>
+            <code class="step-code">sudo ./tanegi --tui --block-trackers --cover-traffic</code>
+          </div>
+        </div>
+        <div class="warning-banner reveal reveal-delay-5">
+          <div class="warning-icon">⚠</div>
+          <div>Для работы kill switch и iptables-правил <strong>требуются права root</strong> (Linux). На macOS/Windows некоторые функции недоступны.</div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="start-terminal">
+          <div class="terminal-bar">
+            <div class="terminal-btn terminal-btn-r"></div>
+            <div class="terminal-btn terminal-btn-y"></div>
+            <div class="terminal-btn terminal-btn-g"></div>
+            <div class="terminal-title">bash — tanegi startup</div>
+          </div>
+          <div class="terminal-content">
+            <span class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">ls -lh</span></span>
+            <span class="t-line t-output">-rwxr-xr-x  2.6M  tanegi</span>
+            <span class="t-line t-output">-rw-r--r--  1.2K  README.md</span>
+            <span class="t-line t-output">drwxr-xr-x       config/</span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">sudo ./tanegi --tui --block-trackers</span></span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line" style="color:#4d6b4d">╔══════════════════════════════════╗</span>
+            <span class="t-line" style="color:var(--green)">║  TANEGI NETWORK v1.0.0           ║</span>
+            <span class="t-line" style="color:#4d6b4d">╚══════════════════════════════════╝</span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line t-info">Initiating Kyber-1024 keygen...</span>
+            <span class="t-line t-info">Building X3DH key bundle...</span>
+            <span class="t-line t-success">✓ Post-quantum keys ready</span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line t-info">iptables: configuring kill switch</span>
+            <span class="t-line t-success">✓ Kill switch ACTIVE</span>
+            <span class="t-line t-info">DNS: enabling DoH (RFC 8484)</span>
+            <span class="t-line t-success">✓ DNS leak protection ACTIVE</span>
+            <span class="t-line t-info">Blocking 23 tracker domains</span>
+            <span class="t-line t-success">✓ Tracker blocking ACTIVE</span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line t-info">Building onion circuit...</span>
+            <span class="t-line t-success">✓ 5-hop circuit established</span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line" style="color:var(--green)">● SOCKS5: 127.0.0.1:9050 READY</span>
+            <span class="t-line" style="color:#4d6b4d">● DHT: Kademlia sync in progress</span>
+            <span class="t-line t-empty"></span>
+            <span class="t-line t-success">Press [t] for TUI · [q] to quit<span class="terminal-cursor"></span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep-glow"></div>
+
+<!-- ── DOWNLOAD ───────────────────────────────────────────────────── -->
+<section id="download">
+  <div class="container">
+    <div class="download-wrap">
+      <div style="text-align:center" class="reveal">
+        <div class="section-label">Скачать</div>
+        <h2 class="section-title">Получить <span class="accent">Tanegi</span></h2>
+        <p class="section-desc" style="margin:0 auto">
+          Скомпилированный бинарник для Linux. Исходный код доступен для аудита.
+        </p>
+      </div>
+      <div class="download-box reveal reveal-delay-1">
+        <div class="version-badge">
+          <span class="dl-version-label">latest stable</span>
+          v1.0.0
+        </div>
+        <div class="dl-title">tanegi.zip</div>
+        <div class="dl-subtitle">Анонимная P2P сеть с пост-квантовым шифрованием</div>
+        <div class="dl-meta">
+          <div class="dl-meta-item">
+            <div class="dl-meta-val">Rust 1.70+</div>
+            <div class="dl-meta-key">Язык</div>
+          </div>
+          <div class="dl-meta-item">
+            <div class="dl-meta-val">Linux</div>
+            <div class="dl-meta-key">Платформа</div>
+          </div>
+          <div class="dl-meta-item">
+            <div class="dl-meta-val">MIT</div>
+            <div class="dl-meta-key">Лицензия</div>
+          </div>
+          <div class="dl-meta-item">
+            <div class="dl-meta-val">~2.6 MB</div>
+            <div class="dl-meta-key">Размер</div>
+          </div>
+        </div>
+        <a href="releases/tanegi.zip" id="dl-btn" class="dl-btn" download onclick="handleDownload(event)">
+          <span class="dl-arrow">⬇</span>
+          Скачать tanegi.zip
+        </a>
+        <div class="dl-platforms">
+          <div class="platform-tag">🐧 Linux x86_64</div>
+          <div class="platform-tag">⚙️ Root required</div>
+          <div class="platform-tag">🔒 Kyber-1024</div>
+        </div>
+        <div class="dl-note">
+          Файл будет подписан SHA3-256. После скачивания проверьте подпись перед запуском.
+        </div>
+        <div class="no-file-notice" id="no-file-notice">
+          ⚠️ Файл <strong>tanegi.zip</strong> ещё не загружен администратором.<br>
+          Пожалуйста, ожидайте — файл скоро появится.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">⬡ TANEGI</div>
+        <div class="footer-tagline">
+          Анонимная P2P-сеть с тройным гибридным пост-квантовым шифрованием.
+          Написана на Rust. Beta-версия.
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Разделы</div>
+        <ul class="footer-links">
+          <li><a href="#features">Возможности</a></li>
+          <li><a href="#crypto">Криптография</a></li>
+          <li><a href="#architecture">Архитектура</a></li>
+          <li><a href="#privacy">Приватность</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Сравнение</div>
+        <ul class="footer-links">
+          <li><a href="#compare">Tanegi vs Tor</a></li>
+          <li><a href="#performance">Производительность</a></li>
+          <li><a href="#start">Быстрый старт</a></li>
+          <li><a href="#download">Скачать</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Технологии</div>
+        <ul class="footer-links">
+          <li><a href="#">Kyber-1024 (NIST PQ)</a></li>
+          <li><a href="#">ChaCha20-Poly1305</a></li>
+          <li><a href="#">Double Ratchet</a></li>
+          <li><a href="#">Kademlia DHT</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">
+        © 2025 <span class="accent">TANEGI</span> · MIT License · Written in Rust
+      </div>
+      <div class="footer-legal">
+        <a href="#">Disclaimer</a>
+        <a href="#">License</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ── SCRIPTS ─────────────────────────────────────────────────────── -->
+<script>
+// ── Matrix Rain ─────────────────────────────────────────────────────
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, cols, drops;
+function initMatrix() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  const fs = 14;
+  cols = Math.floor(W / fs);
+  drops = Array(cols).fill(1);
+}
+initMatrix();
+window.addEventListener('resize', initMatrix);
+const CHARS = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ0101TANEGI';
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(0,0,0,0.05)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#00ff41';
+  ctx.font = '13px JetBrains Mono, monospace';
+  for (let i = 0; i < cols; i++) {
+    const c = CHARS[Math.floor(Math.random() * CHARS.length)];
+    ctx.fillText(c, i * 14, drops[i] * 14);
+    if (drops[i] * 14 > H && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(drawMatrix, 55);
+
+// ── Nav scroll effect ────────────────────────────────────────────────
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ── Reveal on scroll ─────────────────────────────────────────────────
+const reveals = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => revealObs.observe(el));
+
+// ── Counter animation ────────────────────────────────────────────────
+function animateCounter(el, target, duration) {
+  let start = 0;
+  const step = target / (duration / 16);
+  const timer = setInterval(() => {
+    start += step;
+    if (start >= target) { start = target; clearInterval(timer); }
+    const unit = el.querySelector('.perf-unit');
+    const unitHtml = unit ? unit.outerHTML : '';
+    el.innerHTML = Math.floor(start) + unitHtml;
+  }, 16);
+}
+const perfObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && e.target.dataset.target) {
+      animateCounter(e.target, parseInt(e.target.dataset.target), 1500);
+      perfObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.perf-num[data-target]').forEach(el => perfObs.observe(el));
+
+// ── Progress bars animation ──────────────────────────────────────────
+const barObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.perf-bar-fill').forEach(bar => {
+        setTimeout(() => bar.style.width = bar.dataset.width + '%', 200);
+      });
+      barObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.perf-bars').forEach(el => barObs.observe(el));
+
+// ── Download handler ─────────────────────────────────────────────────
+function handleDownload(e) {
+  // Check if file exists by making a HEAD request
+  fetch('releases/tanegi.zip', { method: 'HEAD' })
+    .then(r => {
+      if (!r.ok) {
+        e.preventDefault();
+        document.getElementById('no-file-notice').classList.add('visible');
+      }
+    })
+    .catch(() => {
+      e.preventDefault();
+      document.getElementById('no-file-notice').classList.add('visible');
+    });
+}
+
+// ── Smooth scroll for all anchor links ───────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// ── Particle hover glow on feature cards ────────────────────────────
+document.querySelectorAll('.feature-card, .crypto-layer, .privacy-item').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    card.style.setProperty('--mx', x + '%');
+    card.style.setProperty('--my', y + '%');
+  });
+});
+
+// ── Typing animation on terminal lines ──────────────────────────────
+const termObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const lines = e.target.querySelectorAll('.t-line');
+      lines.forEach((line, i) => {
+        setTimeout(() => line.classList.add('fade-in-line'), i * 80);
+      });
+      termObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll('.terminal-content').forEach(t => {
+  t.querySelectorAll('.t-line').forEach(l => l.style.opacity = 0);
+  termObs.observe(t);
+});
+
+// ── Binary size stats counter ────────────────────────────────────────
+const heroStatObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const nums = e.target.querySelectorAll('.hero-stat-num[data-count]');
+      nums.forEach(el => {
+        const target = parseInt(el.dataset.count);
+        let cur = 0;
+        const step = target / 40;
+        const t = setInterval(() => {
+          cur += step;
+          if (cur >= target) { cur = target; clearInterval(t); }
+          el.textContent = Math.floor(cur);
+        }, 30);
+      });
+      heroStatObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelector('.hero-stats') && heroStatObs.observe(document.querySelector('.hero-stats'));
+</script>
+
+</body>
+</html>
