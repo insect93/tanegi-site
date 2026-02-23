@@ -7,7 +7,7 @@
 <meta name="description" content="Tanegi is an anonymous P2P network with triple-hybrid post-quantum cryptography, onion routing, and Signal-protocol messaging.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@700;800&family=Inter:wght@400;500;600;700;800&subset=cyrillic&display=swap" rel="stylesheet">
 <style>
 /* ─── RESET & BASE ─────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1424,6 +1424,49 @@ footer {
   border-radius: 4px;
 }
 @media (max-width: 768px) { .mobile-menu-btn { display: flex; } }
+
+/* ─── LANGUAGE SWITCHER ────────────────────────────────────────────── */
+.lang-btn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: .3rem .7rem;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  cursor: pointer;
+  transition: all .2s;
+  margin-left: .5rem;
+  flex-shrink: 0;
+}
+.lang-btn:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(0,255,65,.06);
+}
+.lang-btn.active-ru {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+/* ─── CYRILLIC FONT OVERRIDE ───────────────────────────────────────── */
+body.lang-ru {
+  font-family: 'Inter', 'Space Grotesk', sans-serif;
+}
+body.lang-ru .hero-sub,
+body.lang-ru .section-desc,
+body.lang-ru .feature-desc,
+body.lang-ru .privacy-item-desc,
+body.lang-ru .step-desc,
+body.lang-ru .footer-tagline,
+body.lang-ru .perf-desc,
+body.lang-ru .component-desc,
+body.lang-ru p,
+body.lang-ru li {
+  font-family: 'Inter', sans-serif;
+}
 </style>
 </head>
 <body>
@@ -1442,14 +1485,17 @@ footer {
         TANEGI
       </div>
       <ul class="nav-links">
-        <li><a href="#features">Features</a></li>
-        <li><a href="#crypto">Crypto</a></li>
-        <li><a href="#architecture">Network</a></li>
-        <li><a href="#privacy">Privacy</a></li>
-        <li><a href="#compare">vs Tor</a></li>
-        <li><a href="#download" class="nav-cta">Download</a></li>
+        <li><a href="#features" data-i18n="nav.features">Features</a></li>
+        <li><a href="#crypto" data-i18n="nav.crypto">Crypto</a></li>
+        <li><a href="#architecture" data-i18n="nav.network">Network</a></li>
+        <li><a href="#privacy" data-i18n="nav.privacy">Privacy</a></li>
+        <li><a href="#compare" data-i18n="nav.vsTor">vs Tor</a></li>
+        <li><a href="#download" class="nav-cta" data-i18n="nav.download">Download</a></li>
       </ul>
-      <button class="mobile-menu-btn" onclick="scrollTo({top:document.getElementById('download').offsetTop,behavior:'smooth'})">⬇</button>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <button class="lang-btn" id="lang-btn" onclick="toggleLang()">RU</button>
+        <button class="mobile-menu-btn" onclick="scrollTo({top:document.getElementById('download').offsetTop,behavior:'smooth'})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/><path d="M5 20h14"/></svg></button>
+      </div>
     </div>
   </div>
 </nav>
@@ -1466,17 +1512,18 @@ footer {
       <span class="line1">Privacy Beyond</span>
       <span class="line2"><span class="glitch" data-text="Quantum">Quantum</span></span>
     </h1>
-    <p class="hero-sub">
-      <strong>Tanegi</strong> — анонимная P2P-сеть с тройным гибридным шифрованием:<br>
-      Kyber-1024 (пост-квантовый) + ChaCha20-Poly1305 + алгоритм Tanegi.<br>
-      Луковая маршрутизация 3–7 хопов. Написана на <strong>Rust</strong>.
+    <p class="hero-sub" data-i18n="hero.sub">
+      <strong>Tanegi</strong> — anonymous P2P network with triple hybrid encryption:<br>
+      Kyber-1024 (post-quantum) + ChaCha20-Poly1305 + Tanegi algorithm.<br>
+      Onion routing 3–7 hops. Written in <strong>Rust</strong>.
     </p>
     <div class="hero-actions">
       <a href="#download" class="btn-primary">
-        ⬇ &nbsp;Скачать Tanegi
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        &nbsp;<span data-i18n="hero.btn1">Download Tanegi</span>
       </a>
       <a href="#features" class="btn-secondary">
-        Изучить возможности →
+        <span data-i18n="hero.btn2">Explore features →</span>
       </a>
     </div>
     <div class="hero-stats">
@@ -1515,25 +1562,22 @@ footer {
   <div class="container">
     <div class="about-grid">
       <div class="about-text reveal">
-        <div class="section-label">О проекте</div>
-        <h2 class="section-title">Анонимность <span class="accent">нового поколения</span></h2>
-        <p class="section-desc">
-          Tanegi — это децентрализованная P2P-сеть с луковой маршрутизацией,
-          созданная полностью на Rust. В отличие от Tor, Tanegi использует
-          пост-квантовый KEM (Kyber-1024) и собственный математический алгоритм,
-          основанный на задаче числа 10958.
+        <div class="section-label" data-i18n="about.label">About</div>
+        <h2 class="section-title" data-i18n="about.title">Next-generation <span class="accent">Anonymity</span></h2>
+        <p class="section-desc" data-i18n="about.desc1">
+          Tanegi is a decentralized P2P network with onion routing, written entirely in Rust.
+          Unlike Tor, Tanegi uses post-quantum KEM (Kyber-1024) and a custom mathematical
+          algorithm based on the 10958 number problem.
         </p>
-        <p class="section-desc" style="margin-top:1rem">
-          Протокол Double Ratchet (как в Signal) обеспечивает совершенную
-          прямую секретность в чате. Kademlia DHT организует распределённую
-          хранилищную систему с расширенным кодированием Reed-Solomon.
+        <p class="section-desc" style="margin-top:1rem" data-i18n="about.desc2">
+          The Double Ratchet protocol (as in Signal) provides perfect forward secrecy in chat.
+          Kademlia DHT organizes a distributed storage system with extended Reed-Solomon coding.
         </p>
         <div class="warning-banner" style="margin-top:2rem">
-          <div class="warning-icon">⚠</div>
-          <div>
-            <strong style="color:#ffa657">Beta-версия.</strong>
-            Проект находится в стадии разработки. Не использовать для
-            защиты критически важных данных в production.
+          <div class="warning-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <div data-i18n="about.warning">
+            <strong style="color:#ffa657">Beta version.</strong>
+            The project is under development. Do not use for protecting critical data in production.
           </div>
         </div>
       </div>
@@ -1570,65 +1614,65 @@ footer {
 <section id="features">
   <div class="container">
     <div class="features-intro reveal">
-      <div class="section-label">Возможности</div>
-      <h2 class="section-title">Полный стек <span class="accent">анонимности</span></h2>
-      <p class="section-desc" style="margin:0 auto">
-        Каждый компонент разработан с нуля с учётом приватности и производительности.
+      <div class="section-label" data-i18n="feat.label">Features</div>
+      <h2 class="section-title" data-i18n="feat.title">Full <span class="accent">Anonymity</span> Stack</h2>
+      <p class="section-desc" style="margin:0 auto" data-i18n="feat.desc">
+        Every component is designed from scratch with privacy and performance in mind.
       </p>
     </div>
     <div class="features-grid">
       <div class="feature-card reveal reveal-delay-1">
-        <div class="feature-icon">🔐</div>
-        <div class="feature-title">Тройное гибридное шифрование</div>
-        <div class="feature-desc">Kyber-1024 (NIST PQ) + ChaCha20-Poly1305 + алгоритм Tanegi. Порядок применения случайный для защиты от криптоанализа.</div>
+        <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg></div>
+        <div class="feature-title" data-i18n="feat.f1.title">Triple Hybrid Encryption</div>
+        <div class="feature-desc" data-i18n="feat.f1.desc">Kyber-1024 (NIST PQ) + ChaCha20-Poly1305 + Tanegi algorithm. Application order is randomized to protect against cryptanalysis.</div>
         <div class="feature-tag">Post-Quantum</div>
       </div>
       <div class="feature-card reveal reveal-delay-2">
-        <div class="feature-icon">🧅</div>
-        <div class="feature-title">Луковая маршрутизация</div>
-        <div class="feature-desc">3–7 хопов с принудительным разнообразием подсетей /16. Ed25519 верификация каждого узла, эфемерные ключи X25519 на каждый хоп.</div>
+        <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+        <div class="feature-title" data-i18n="feat.f2.title">Onion Routing</div>
+        <div class="feature-desc" data-i18n="feat.f2.desc">3–7 hops with enforced /16 subnet diversity. Ed25519 verification of each node, ephemeral X25519 keys per hop.</div>
         <div class="feature-tag">Anti-Sybil</div>
       </div>
       <div class="feature-card reveal reveal-delay-3">
-        <div class="feature-icon">💬</div>
-        <div class="feature-title">Signal-протокол чата</div>
-        <div class="feature-desc">Double Ratchet + X3DH. Совершенная прямая секретность (PFS). Post-compromise security. Поддержка до 1000 пропущенных ключей.</div>
+        <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="feature-title" data-i18n="feat.f3.title">Signal Protocol Chat</div>
+        <div class="feature-desc" data-i18n="feat.f3.desc">Double Ratchet + X3DH. Perfect Forward Secrecy (PFS). Post-compromise security. Supports up to 1000 skipped keys.</div>
         <div class="feature-tag">Double Ratchet</div>
       </div>
       <div class="feature-card reveal reveal-delay-1">
-        <div class="feature-icon">🌐</div>
-        <div class="feature-title">SOCKS5 + HTTP прокси</div>
-        <div class="feature-desc">RFC 1928 совместимый SOCKS5 прокси на порту 9050. HTTP/HTTPS прокси с CONNECT туннелем. Поддержка UDP ASSOCIATE.</div>
+        <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="feature-title" data-i18n="feat.f4.title">SOCKS5 + HTTP Proxy</div>
+        <div class="feature-desc" data-i18n="feat.f4.desc">RFC 1928 compatible SOCKS5 proxy on port 9050. HTTP/HTTPS proxy with CONNECT tunnel. UDP ASSOCIATE support.</div>
         <div class="feature-tag">RFC 1928</div>
       </div>
       <div class="feature-card reveal reveal-delay-2">
-        <div class="feature-icon">📦</div>
-        <div class="feature-title">Распределённое хранилище</div>
-        <div class="feature-desc">AES-256-GCM шифрование + HKDF. Коды Reed-Solomon (8+4). LZ4 компрессия. По умолчанию 3 GB на узел.</div>
+        <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+        <div class="feature-title" data-i18n="feat.f5.title">Distributed Storage</div>
+        <div class="feature-desc" data-i18n="feat.f5.desc">AES-256-GCM encryption + HKDF. Reed-Solomon codes (8+4). LZ4 compression. Default 3 GB per node.</div>
         <div class="feature-tag">Reed-Solomon</div>
       </div>
       <div class="feature-card reveal reveal-delay-3">
-        <div class="feature-icon">🛡️</div>
-        <div class="feature-title">Kill Switch + DNS защита</div>
-        <div class="feature-desc">iptables kill switch при разрыве туннеля. DoH (RFC 8484) для DNS. Блокировка 23+ трекеров и рекламных доменов. WebRTC leak prevention.</div>
+        <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="feature-title" data-i18n="feat.f6.title">Kill Switch + DNS Protection</div>
+        <div class="feature-desc" data-i18n="feat.f6.desc">iptables kill switch on tunnel disconnect. DoH (RFC 8484) for DNS. Blocks 23+ trackers and ad domains. WebRTC leak prevention.</div>
         <div class="feature-tag">Zero Leaks</div>
       </div>
       <div class="feature-card reveal reveal-delay-1">
-        <div class="feature-icon">📡</div>
-        <div class="feature-title">Kademlia DHT</div>
-        <div class="feature-desc">K-bucket size 20. 3 параллельных запроса. До 100 000 элементов, 10 MB хранилища. TTL 24 часа. Sybil защита через PoW.</div>
+        <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg></div>
+        <div class="feature-title" data-i18n="feat.f7.title">Kademlia DHT</div>
+        <div class="feature-desc" data-i18n="feat.f7.desc">K-bucket size 20. 3 parallel lookups. Up to 100,000 items, 10 MB storage. TTL 24 hours. Sybil protection via PoW.</div>
         <div class="feature-tag">Kademlia</div>
       </div>
       <div class="feature-card reveal reveal-delay-2">
-        <div class="feature-icon">🎭</div>
-        <div class="feature-title">Cover Traffic + Garlic</div>
-        <div class="feature-desc">Адаптивный cover traffic (10% от пропускной способности). Garlic routing — объединение сообщений для защиты от traffic analysis.</div>
+        <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></div>
+        <div class="feature-title" data-i18n="feat.f8.title">Cover Traffic + Garlic</div>
+        <div class="feature-desc" data-i18n="feat.f8.desc">Adaptive cover traffic (10% of bandwidth). Garlic routing — message bundling for traffic analysis protection.</div>
         <div class="feature-tag">Traffic Analysis</div>
       </div>
       <div class="feature-card reveal reveal-delay-3">
-        <div class="feature-icon">⚡</div>
-        <div class="feature-title">Написан на Rust</div>
-        <div class="feature-desc">Tokio async runtime. Zero-copy операции. Полный LTO. Бинарник 2.6 MB. OsRng для всей криптографии. Zeroize для очистки ключей.</div>
+        <div class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div class="feature-title" data-i18n="feat.f9.title">Written in Rust</div>
+        <div class="feature-desc" data-i18n="feat.f9.desc">Tokio async runtime. Zero-copy operations. Full LTO. 2.6 MB binary. OsRng for all cryptography. Zeroize for key cleanup.</div>
         <div class="feature-tag">Memory Safe</div>
       </div>
     </div>
@@ -1642,9 +1686,9 @@ footer {
   <div class="container">
     <div class="crypto-grid">
       <div class="reveal">
-        <div class="section-label">Криптография</div>
-        <h2 class="section-title">Слои <span class="accent">шифрования</span></h2>
-        <p class="section-desc">Каждое сообщение проходит через три независимых криптографических слоя.</p>
+        <div class="section-label" data-i18n="crypto.label">Cryptography</div>
+        <h2 class="section-title" data-i18n="crypto.title">Encryption <span class="accent">Layers</span></h2>
+        <p class="section-desc" data-i18n="crypto.desc">Every message passes through three independent cryptographic layers.</p>
         <div style="margin-top:2.5rem">
           <div class="crypto-layer reveal">
             <div class="layer-num">L1</div>
@@ -1711,14 +1755,14 @@ footer {
           </div>
         </div>
         <div class="crypto-props">
-          <div class="crypto-prop"><div class="prop-check">✓</div>Совершенная прямая секретность (PFS)</div>
-          <div class="crypto-prop"><div class="prop-check">✓</div>Post-compromise security</div>
-          <div class="crypto-prop"><div class="prop-check">✓</div>Constant-time сравнение (ct_eq)</div>
-          <div class="crypto-prop"><div class="prop-check">✓</div>OsRng для всей генерации ключей</div>
-          <div class="crypto-prop"><div class="prop-check">✓</div>Zeroize — безопасное стирание памяти</div>
-          <div class="crypto-prop"><div class="prop-check">✓</div>HKDF + SHA3-256/512 key derivation</div>
-          <div class="crypto-prop"><div class="prop-check">✓</div>Replay protection — HMAC-SHA3-256</div>
-          <div class="crypto-prop"><div class="prop-check">✓</div>Квантово-устойчивое хранилище AES-256-GCM</div>
+          <div class="crypto-prop"><div class="prop-check">✓</div><span data-i18n="crypto.p1">Perfect Forward Secrecy (PFS)</span></div>
+          <div class="crypto-prop"><div class="prop-check">✓</div><span data-i18n="crypto.p2">Post-compromise security</span></div>
+          <div class="crypto-prop"><div class="prop-check">✓</div><span data-i18n="crypto.p3">Constant-time comparison (ct_eq)</span></div>
+          <div class="crypto-prop"><div class="prop-check">✓</div><span data-i18n="crypto.p4">OsRng for all key generation</span></div>
+          <div class="crypto-prop"><div class="prop-check">✓</div><span data-i18n="crypto.p5">Zeroize — secure memory erasure</span></div>
+          <div class="crypto-prop"><div class="prop-check">✓</div><span data-i18n="crypto.p6">HKDF + SHA3-256/512 key derivation</span></div>
+          <div class="crypto-prop"><div class="prop-check">✓</div><span data-i18n="crypto.p7">Replay protection — HMAC-SHA3-256</span></div>
+          <div class="crypto-prop"><div class="prop-check">✓</div><span data-i18n="crypto.p8">Quantum-resistant storage AES-256-GCM</span></div>
         </div>
       </div>
     </div>
@@ -1731,94 +1775,94 @@ footer {
 <section id="architecture">
   <div class="container">
     <div class="arch-intro reveal">
-      <div class="section-label">Архитектура</div>
-      <h2 class="section-title">Путь <span class="accent">пакета</span></h2>
-      <p class="section-desc" style="margin:0 auto">
-        Каждый пакет проходит луковое шифрование и несколько независимых узлов,
-        прежде чем достигнуть назначения.
+      <div class="section-label" data-i18n="arch.label">Architecture</div>
+      <h2 class="section-title" data-i18n="arch.title">Packet <span class="accent">Journey</span></h2>
+      <p class="section-desc" style="margin:0 auto" data-i18n="arch.desc">
+        Every packet goes through onion encryption and several independent nodes
+        before reaching its destination.
       </p>
     </div>
     <div class="arch-diagram reveal reveal-delay-1">
       <div class="arch-flow">
         <div class="arch-node">
           <div class="arch-node-box">
-            <div class="arch-node-icon">💻</div>
-            <div class="arch-node-name">You</div>
+            <div class="arch-node-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div class="arch-node-name" data-i18n="arch.you">You</div>
             <div class="arch-node-desc">SOCKS5 :9050</div>
           </div>
         </div>
         <div class="arch-arrow"><div class="arch-arrow-animated">→→→</div></div>
         <div class="arch-node">
           <div class="arch-node-box">
-            <div class="arch-node-icon">🛡️</div>
-            <div class="arch-node-name">Guard</div>
+            <div class="arch-node-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="arch-node-name" data-i18n="arch.guard">Guard</div>
             <div class="arch-node-desc">Entry Node</div>
           </div>
         </div>
         <div class="arch-arrow"><div class="arch-arrow-animated">→→→</div></div>
         <div class="arch-node">
           <div class="arch-node-box">
-            <div class="arch-node-icon">🔀</div>
-            <div class="arch-node-name">Middle</div>
+            <div class="arch-node-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></div>
+            <div class="arch-node-name" data-i18n="arch.middle">Middle</div>
             <div class="arch-node-desc">Relay 1</div>
           </div>
         </div>
         <div class="arch-arrow"><div class="arch-arrow-animated">→→→</div></div>
         <div class="arch-node">
           <div class="arch-node-box">
-            <div class="arch-node-icon">🔀</div>
-            <div class="arch-node-name">Middle</div>
+            <div class="arch-node-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></div>
+            <div class="arch-node-name" data-i18n="arch.middle">Middle</div>
             <div class="arch-node-desc">Relay 2+</div>
           </div>
         </div>
         <div class="arch-arrow"><div class="arch-arrow-animated">→→→</div></div>
         <div class="arch-node">
           <div class="arch-node-box">
-            <div class="arch-node-icon">🚪</div>
-            <div class="arch-node-name">Exit</div>
+            <div class="arch-node-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+            <div class="arch-node-name" data-i18n="arch.exit">Exit</div>
             <div class="arch-node-desc">Clearnet</div>
           </div>
         </div>
         <div class="arch-arrow"><div class="arch-arrow-animated">→→→</div></div>
         <div class="arch-node">
           <div class="arch-node-box">
-            <div class="arch-node-icon">🌍</div>
-            <div class="arch-node-name">Internet</div>
+            <div class="arch-node-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <div class="arch-node-name" data-i18n="arch.internet">Internet</div>
             <div class="arch-node-desc">Destination</div>
           </div>
         </div>
       </div>
       <div class="arch-hops">
-        <div class="arch-hop-item"><div class="hop-dot hop-guard"></div> Guard — стабильный, высокая пропускная</div>
-        <div class="arch-hop-item"><div class="hop-dot hop-middle"></div> Middle — relay-only, без exit трафика</div>
-        <div class="arch-hop-item"><div class="hop-dot hop-exit"></div> Exit — добровольный, clearnet доступ</div>
+        <div class="arch-hop-item"><div class="hop-dot hop-guard"></div> <span data-i18n="arch.hop1">Guard — stable, high bandwidth</span></div>
+        <div class="arch-hop-item"><div class="hop-dot hop-middle"></div> <span data-i18n="arch.hop2">Middle — relay-only, no exit traffic</span></div>
+        <div class="arch-hop-item"><div class="hop-dot hop-exit"></div> <span data-i18n="arch.hop3">Exit — voluntary, clearnet access</span></div>
       </div>
     </div>
     <div class="components-grid" style="margin-top:5rem">
       <div class="component-card reveal reveal-delay-1">
-        <div class="component-icon">⚙️</div>
+        <div class="component-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
         <div class="component-name">tanegi-cli</div>
-        <div class="component-desc">TUI интерфейс, CLI, сборка цепочек, аккаунты</div>
+        <div class="component-desc" data-i18n="arch.c1.desc">TUI interface, CLI, circuit building, accounts</div>
       </div>
       <div class="component-card reveal reveal-delay-2">
-        <div class="component-icon">🌐</div>
+        <div class="component-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
         <div class="component-name">tanegi-core</div>
-        <div class="component-desc">DHT, транспорт, луковый роутер, garlic</div>
+        <div class="component-desc" data-i18n="arch.c2.desc">DHT, transport, onion router, garlic</div>
       </div>
       <div class="component-card reveal reveal-delay-3">
-        <div class="component-icon">🔒</div>
+        <div class="component-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
         <div class="component-name">tanegi-math</div>
-        <div class="component-desc">Tanegi cipher, Kyber, гибридный KEM</div>
+        <div class="component-desc" data-i18n="arch.c3.desc">Tanegi cipher, Kyber, hybrid KEM</div>
       </div>
       <div class="component-card reveal reveal-delay-4">
-        <div class="component-icon">💾</div>
+        <div class="component-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></svg></div>
         <div class="component-name">tanegi-storage</div>
-        <div class="component-desc">AES-GCM, Reed-Solomon, LZ4, DHT-хранилище</div>
+        <div class="component-desc" data-i18n="arch.c4.desc">AES-GCM, Reed-Solomon, LZ4, DHT storage</div>
       </div>
       <div class="component-card reveal reveal-delay-5">
-        <div class="component-icon">🔌</div>
+        <div class="component-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></div>
         <div class="component-name">tanegi-gateway</div>
-        <div class="component-desc">SOCKS5, HTTP proxy, DNS, exit node</div>
+        <div class="component-desc" data-i18n="arch.c5.desc">SOCKS5, HTTP proxy, DNS, exit node</div>
       </div>
     </div>
   </div>
@@ -1831,43 +1875,43 @@ footer {
   <div class="container">
     <div class="privacy-grid">
       <div class="reveal">
-        <div class="section-label">Приватность</div>
-        <h2 class="section-title">Нулевая <span class="accent">утечка</span></h2>
-        <p class="section-desc">Многоуровневая защита от деанонимизации на каждом уровне стека.</p>
+        <div class="section-label" data-i18n="priv.label">Privacy</div>
+        <h2 class="section-title" data-i18n="priv.title">Zero <span class="accent">Leaks</span></h2>
+        <p class="section-desc" data-i18n="priv.desc">Multi-layer protection against deanonymization at every level of the stack.</p>
         <div class="privacy-list" style="margin-top:2.5rem">
           <div class="privacy-item">
-            <div class="privacy-icon">🔥</div>
+            <div class="privacy-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>
             <div>
-              <div class="privacy-item-title">Kill Switch</div>
-              <div class="privacy-item-desc">iptables автоматически блокирует весь трафик при разрыве VPN-туннеля. Требует root. Защищает от IP-утечек.</div>
+              <div class="privacy-item-title" data-i18n="priv.p1.title">Kill Switch</div>
+              <div class="privacy-item-desc" data-i18n="priv.p1.desc">iptables automatically blocks all traffic on VPN tunnel disconnect. Requires root. Protects against IP leaks.</div>
             </div>
           </div>
           <div class="privacy-item">
-            <div class="privacy-icon">🎭</div>
+            <div class="privacy-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></div>
             <div>
-              <div class="privacy-item-title">Cover Traffic</div>
-              <div class="privacy-item-desc">Адаптивная генерация фиктивного трафика (10% пропускной способности). Защита от traffic analysis.</div>
+              <div class="privacy-item-title" data-i18n="priv.p2.title">Cover Traffic</div>
+              <div class="privacy-item-desc" data-i18n="priv.p2.desc">Adaptive generation of dummy traffic (10% of bandwidth). Protection against traffic analysis.</div>
             </div>
           </div>
           <div class="privacy-item">
-            <div class="privacy-icon">🚫</div>
+            <div class="privacy-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
             <div>
-              <div class="privacy-item-title">Блокировка трекеров</div>
-              <div class="privacy-item-desc">DNS-блокировка google-analytics, doubleclick, facebook, telemetry Microsoft/Mozilla и 20+ других доменов слежки.</div>
+              <div class="privacy-item-title" data-i18n="priv.p3.title">Tracker Blocking</div>
+              <div class="privacy-item-desc" data-i18n="priv.p3.desc">DNS blocking of google-analytics, doubleclick, facebook, Microsoft/Mozilla telemetry and 20+ other tracking domains.</div>
             </div>
           </div>
           <div class="privacy-item">
-            <div class="privacy-icon">📡</div>
+            <div class="privacy-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg></div>
             <div>
-              <div class="privacy-item-title">DoH (DNS over HTTPS)</div>
-              <div class="privacy-item-desc">RFC 8484. Все DNS-запросы зашифрованы. Fallback — DNS через Tanegi-цепочку. Нет DNS-утечек.</div>
+              <div class="privacy-item-title" data-i18n="priv.p4.title">DoH (DNS over HTTPS)</div>
+              <div class="privacy-item-desc" data-i18n="priv.p4.desc">RFC 8484. All DNS queries are encrypted. Fallback — DNS via Tanegi circuit. No DNS leaks.</div>
             </div>
           </div>
           <div class="privacy-item">
-            <div class="privacy-icon">📹</div>
+            <div class="privacy-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg></div>
             <div>
-              <div class="privacy-item-title">WebRTC Blocking</div>
-              <div class="privacy-item-desc">iptables правила блокируют WebRTC STUN/TURN запросы, которые могут раскрыть реальный IP-адрес.</div>
+              <div class="privacy-item-title" data-i18n="priv.p5.title">WebRTC Blocking</div>
+              <div class="privacy-item-desc" data-i18n="priv.p5.desc">iptables rules block WebRTC STUN/TURN requests that could reveal the real IP address.</div>
             </div>
           </div>
         </div>
@@ -1920,66 +1964,66 @@ footer {
 <section id="performance">
   <div class="container">
     <div class="perf-intro reveal">
-      <div class="section-label">Производительность</div>
-      <h2 class="section-title">Скорость без <span class="accent">компромиссов</span></h2>
-      <p class="section-desc" style="margin:0 auto">
-        Высокая пропускная способность при полной анонимности.
+      <div class="section-label" data-i18n="perf.label">Performance</div>
+      <h2 class="section-title" data-i18n="perf.title">Speed Without <span class="accent">Compromise</span></h2>
+      <p class="section-desc" style="margin:0 auto" data-i18n="perf.desc">
+        High bandwidth with full anonymity.
       </p>
     </div>
     <div class="perf-grid">
       <div class="perf-card reveal reveal-delay-1">
         <div class="perf-num" data-target="100">0<span class="perf-unit"> MB/s</span></div>
-        <div class="perf-label">Загрузка</div>
-        <div class="perf-desc">Максимальная скорость скачивания</div>
+        <div class="perf-label" data-i18n="perf.c1.label">Download</div>
+        <div class="perf-desc" data-i18n="perf.c1.desc">Maximum download speed</div>
       </div>
       <div class="perf-card reveal reveal-delay-2">
         <div class="perf-num" data-target="50">0<span class="perf-unit"> MB/s</span></div>
-        <div class="perf-label">Отдача</div>
-        <div class="perf-desc">Максимальная скорость загрузки</div>
+        <div class="perf-label" data-i18n="perf.c2.label">Upload</div>
+        <div class="perf-desc" data-i18n="perf.c2.desc">Maximum upload speed</div>
       </div>
       <div class="perf-card reveal reveal-delay-3">
         <div class="perf-num" data-target="25">0<span class="perf-unit"> MB/s</span></div>
-        <div class="perf-label">Relay</div>
-        <div class="perf-desc">Пропускная способность ретрансляции</div>
+        <div class="perf-label" data-i18n="perf.c3.label">Relay</div>
+        <div class="perf-desc" data-i18n="perf.c3.desc">Relay throughput</div>
       </div>
       <div class="perf-card reveal reveal-delay-4">
         <div class="perf-num" data-target="1000">0</div>
-        <div class="perf-label">Соединений</div>
-        <div class="perf-desc">Максимум одновременных подключений</div>
+        <div class="perf-label" data-i18n="perf.c4.label">Connections</div>
+        <div class="perf-desc" data-i18n="perf.c4.desc">Max simultaneous connections</div>
       </div>
     </div>
     <div class="perf-bars reveal reveal-delay-2">
       <div class="perf-bar-item">
         <div class="perf-bar-header">
-          <div class="perf-bar-name">Шифрование ChaCha20-Poly1305</div>
+          <div class="perf-bar-name" data-i18n="perf.b1">ChaCha20-Poly1305 Encryption</div>
           <div class="perf-bar-value">&gt;10 MB/s</div>
         </div>
         <div class="perf-bar-track"><div class="perf-bar-fill" data-width="85"></div></div>
       </div>
       <div class="perf-bar-item">
         <div class="perf-bar-header">
-          <div class="perf-bar-name">DHT lookup latency</div>
+          <div class="perf-bar-name" data-i18n="perf.b2">DHT lookup latency</div>
           <div class="perf-bar-value">&lt;15s timeout</div>
         </div>
         <div class="perf-bar-track"><div class="perf-bar-fill" data-width="70"></div></div>
       </div>
       <div class="perf-bar-item">
         <div class="perf-bar-header">
-          <div class="perf-bar-name">Circuit build time</div>
+          <div class="perf-bar-name" data-i18n="perf.b3">Circuit build time</div>
           <div class="perf-bar-value">&lt;30s</div>
         </div>
         <div class="perf-bar-track"><div class="perf-bar-fill" data-width="78"></div></div>
       </div>
       <div class="perf-bar-item">
         <div class="perf-bar-header">
-          <div class="perf-bar-name">Binary size (stripped, LTO)</div>
+          <div class="perf-bar-name" data-i18n="perf.b4">Binary size (stripped, LTO)</div>
           <div class="perf-bar-value">2.6 MB</div>
         </div>
         <div class="perf-bar-track"><div class="perf-bar-fill" data-width="15"></div></div>
       </div>
       <div class="perf-bar-item">
         <div class="perf-bar-header">
-          <div class="perf-bar-name">RAM минимум</div>
+          <div class="perf-bar-name" data-i18n="perf.b5">Minimum RAM</div>
           <div class="perf-bar-value">512 MB</div>
         </div>
         <div class="perf-bar-track"><div class="perf-bar-fill" data-width="30"></div></div>
@@ -1994,83 +2038,83 @@ footer {
 <section id="compare">
   <div class="container">
     <div style="text-align:center;margin-bottom:3rem" class="reveal">
-      <div class="section-label">Сравнение</div>
+      <div class="section-label" data-i18n="cmp.label">Comparison</div>
       <h2 class="section-title">Tanegi <span class="accent">vs</span> Tor</h2>
-      <p class="section-desc" style="margin:0 auto">Что отличает Tanegi от существующих решений.</p>
+      <p class="section-desc" style="margin:0 auto" data-i18n="cmp.desc">What differentiates Tanegi from existing solutions.</p>
     </div>
     <div class="compare-table-wrap reveal reveal-delay-1">
       <table>
         <thead>
           <tr>
-            <th>Функция</th>
-            <th class="tanegi-col">⬡ TANEGI</th>
+            <th data-i18n="cmp.th.feat">Feature</th>
+            <th class="tanegi-col"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> TANEGI</th>
             <th style="color:var(--text2)">Tor</th>
             <th style="color:var(--text2)">I2P</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Пост-квантовая криптография</td>
+            <td data-i18n="cmp.r1">Post-quantum cryptography</td>
             <td class="td-tanegi">✓ Kyber-1024</td>
             <td><span class="cross">✗</span></td>
             <td><span class="cross">✗</span></td>
           </tr>
           <tr>
-            <td>Гибридное шифрование</td>
-            <td class="td-tanegi">✓ 3 алгоритма</td>
-            <td><span class="partial">1 слой</span></td>
-            <td><span class="partial">2 слоя</span></td>
+            <td data-i18n="cmp.r2">Hybrid encryption</td>
+            <td class="td-tanegi" data-i18n="cmp.r2.tanegi">✓ 3 algorithms</td>
+            <td><span class="partial" data-i18n="cmp.r2.tor">1 layer</span></td>
+            <td><span class="partial" data-i18n="cmp.r2.i2p">2 layers</span></td>
           </tr>
           <tr>
-            <td>Signal-протокол (Double Ratchet)</td>
-            <td class="td-tanegi">✓ Встроен</td>
+            <td data-i18n="cmp.r3">Signal protocol (Double Ratchet)</td>
+            <td class="td-tanegi" data-i18n="cmp.built-in">✓ Built-in</td>
             <td><span class="cross">✗</span></td>
             <td><span class="cross">✗</span></td>
           </tr>
           <tr>
-            <td>Kill Switch</td>
+            <td data-i18n="cmp.r4">Kill Switch</td>
             <td class="td-tanegi">✓ iptables</td>
-            <td><span class="partial">Плагин</span></td>
+            <td><span class="partial" data-i18n="cmp.plugin">Plugin</span></td>
             <td><span class="cross">✗</span></td>
           </tr>
           <tr>
-            <td>Cover Traffic</td>
-            <td class="td-tanegi">✓ Адаптивный</td>
-            <td><span class="partial">Настраиваем</span></td>
+            <td data-i18n="cmp.r5">Cover Traffic</td>
+            <td class="td-tanegi" data-i18n="cmp.adaptive">✓ Adaptive</td>
+            <td><span class="partial" data-i18n="cmp.configurable">Configurable</span></td>
             <td><span class="check">✓</span></td>
           </tr>
           <tr>
-            <td>Встроенный DHT</td>
+            <td data-i18n="cmp.r6">Built-in DHT</td>
             <td class="td-tanegi">✓ Kademlia</td>
             <td><span class="partial">Bridge DB</span></td>
             <td><span class="check">✓</span></td>
           </tr>
           <tr>
-            <td>Распределённое хранилище</td>
+            <td data-i18n="cmp.r7">Distributed storage</td>
             <td class="td-tanegi">✓ AES-256-GCM</td>
             <td><span class="cross">✗</span></td>
-            <td><span class="partial">Частично</span></td>
+            <td><span class="partial" data-i18n="cmp.partial">Partial</span></td>
           </tr>
           <tr>
-            <td>NAT Traversal (STUN)</td>
+            <td data-i18n="cmp.r8">NAT Traversal (STUN)</td>
             <td class="td-tanegi">✓ ICE/STUN</td>
-            <td><span class="partial">Частично</span></td>
+            <td><span class="partial" data-i18n="cmp.partial">Partial</span></td>
             <td><span class="check">✓</span></td>
           </tr>
           <tr>
-            <td>Garlic Routing</td>
-            <td class="td-tanegi">✓ Встроен</td>
+            <td data-i18n="cmp.r9">Garlic Routing</td>
+            <td class="td-tanegi" data-i18n="cmp.built-in">✓ Built-in</td>
             <td><span class="cross">✗</span></td>
             <td><span class="check">✓</span></td>
           </tr>
           <tr>
-            <td>Язык</td>
+            <td data-i18n="cmp.r10">Language</td>
             <td class="td-tanegi">Rust (memory safe)</td>
             <td>C / Python</td>
             <td>Java</td>
           </tr>
           <tr>
-            <td>Размер бинарника</td>
+            <td data-i18n="cmp.r11">Binary size</td>
             <td class="td-tanegi">2.6 MB</td>
             <td>~50 MB</td>
             <td>~80 MB</td>
@@ -2087,46 +2131,46 @@ footer {
 <section id="start">
   <div class="container">
     <div style="text-align:center;margin-bottom:4rem" class="reveal">
-      <div class="section-label">Быстрый старт</div>
-      <h2 class="section-title">Запуск за <span class="accent">3 шага</span></h2>
+      <div class="section-label" data-i18n="start.label">Quick Start</div>
+      <h2 class="section-title" data-i18n="start.title">Up and running in <span class="accent">3 steps</span></h2>
     </div>
     <div class="start-grid">
       <div class="start-steps">
         <div class="start-step reveal reveal-delay-1">
           <div class="step-num">1</div>
           <div>
-            <div class="step-title">Скачайте и распакуйте</div>
-            <div class="step-desc">Скачайте <code style="color:var(--green)">tanegi.zip</code>, распакуйте в удобное место.</div>
+            <div class="step-title" data-i18n="start.s1.title">Download and extract</div>
+            <div class="step-desc" data-i18n="start.s1.desc">Download <code style="color:var(--green)">tanegi.zip</code>, extract to a convenient location.</div>
             <code class="step-code">unzip tanegi.zip && cd tanegi/</code>
           </div>
         </div>
         <div class="start-step reveal reveal-delay-2">
           <div class="step-num">2</div>
           <div>
-            <div class="step-title">Сделайте исполняемым</div>
-            <div class="step-desc">Бинарный файл требует права на исполнение и запуск от root для работы с iptables.</div>
+            <div class="step-title" data-i18n="start.s2.title">Make executable</div>
+            <div class="step-desc" data-i18n="start.s2.desc">The binary requires execution permissions and root privileges for iptables.</div>
             <code class="step-code">chmod +x tanegi && sudo ./tanegi</code>
           </div>
         </div>
         <div class="start-step reveal reveal-delay-3">
           <div class="step-num">3</div>
           <div>
-            <div class="step-title">Настройте SOCKS5 прокси</div>
-            <div class="step-desc">Укажите приложениям (браузер, curl) использовать SOCKS5 прокси <code style="color:var(--green)">127.0.0.1:9050</code>.</div>
+            <div class="step-title" data-i18n="start.s3.title">Configure SOCKS5 proxy</div>
+            <div class="step-desc" data-i18n="start.s3.desc">Configure applications (browser, curl) to use SOCKS5 proxy <code style="color:var(--green)">127.0.0.1:9050</code>.</div>
             <code class="step-code">curl --socks5-hostname 127.0.0.1:9050 https://check.torproject.org</code>
           </div>
         </div>
         <div class="start-step reveal reveal-delay-4">
           <div class="step-num">+</div>
           <div>
-            <div class="step-title">Дополнительные флаги</div>
-            <div class="step-desc">Включите усиленную защиту приватности.</div>
+            <div class="step-title" data-i18n="start.s4.title">Additional flags</div>
+            <div class="step-desc" data-i18n="start.s4.desc">Enable enhanced privacy protection.</div>
             <code class="step-code">sudo ./tanegi --tui --block-trackers --cover-traffic</code>
           </div>
         </div>
         <div class="warning-banner reveal reveal-delay-5">
-          <div class="warning-icon">⚠</div>
-          <div>Для работы kill switch и iptables-правил <strong>требуются права root</strong> (Linux). На macOS/Windows некоторые функции недоступны.</div>
+          <div class="warning-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <div data-i18n="start.warning"><strong>Root privileges</strong> are required for kill switch and iptables rules (Linux). Some features are not available on macOS/Windows.</div>
         </div>
       </div>
       <div class="reveal reveal-delay-2">
@@ -2181,10 +2225,10 @@ footer {
   <div class="container">
     <div class="download-wrap">
       <div style="text-align:center" class="reveal">
-        <div class="section-label">Скачать</div>
-        <h2 class="section-title">Получить <span class="accent">Tanegi</span></h2>
-        <p class="section-desc" style="margin:0 auto">
-          Скомпилированный бинарник для Linux. Исходный код доступен для аудита.
+        <div class="section-label" data-i18n="dl.label">Download</div>
+        <h2 class="section-title" data-i18n="dl.title">Get <span class="accent">Tanegi</span></h2>
+        <p class="section-desc" style="margin:0 auto" data-i18n="dl.desc">
+          Compiled binary for Linux. Source code available for audit.
         </p>
       </div>
       <div class="download-box reveal reveal-delay-1">
@@ -2193,40 +2237,40 @@ footer {
           v1.0.0
         </div>
         <div class="dl-title">tanegi.zip</div>
-        <div class="dl-subtitle">Анонимная P2P сеть с пост-квантовым шифрованием</div>
+        <div class="dl-subtitle" data-i18n="dl.subtitle">Anonymous P2P network with post-quantum encryption</div>
         <div class="dl-meta">
           <div class="dl-meta-item">
             <div class="dl-meta-val">Rust 1.70+</div>
-            <div class="dl-meta-key">Язык</div>
+            <div class="dl-meta-key" data-i18n="dl.meta.lang">Language</div>
           </div>
           <div class="dl-meta-item">
             <div class="dl-meta-val">Linux</div>
-            <div class="dl-meta-key">Платформа</div>
+            <div class="dl-meta-key" data-i18n="dl.meta.platform">Platform</div>
           </div>
           <div class="dl-meta-item">
             <div class="dl-meta-val">MIT</div>
-            <div class="dl-meta-key">Лицензия</div>
+            <div class="dl-meta-key" data-i18n="dl.meta.license">License</div>
           </div>
           <div class="dl-meta-item">
             <div class="dl-meta-val">~2.6 MB</div>
-            <div class="dl-meta-key">Размер</div>
+            <div class="dl-meta-key" data-i18n="dl.meta.size">Size</div>
           </div>
         </div>
         <a href="releases/tanegi.zip" id="dl-btn" class="dl-btn" download onclick="handleDownload(event)">
-          <span class="dl-arrow">⬇</span>
-          Скачать tanegi.zip
+          <span class="dl-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+          <span data-i18n="dl.btn">Download tanegi.zip</span>
         </a>
         <div class="dl-platforms">
-          <div class="platform-tag">🐧 Linux x86_64</div>
-          <div class="platform-tag">⚙️ Root required</div>
-          <div class="platform-tag">🔒 Kyber-1024</div>
+          <div class="platform-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> Linux x86_64</div>
+          <div class="platform-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> <span data-i18n="dl.root">Root required</span></div>
+          <div class="platform-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Kyber-1024</div>
         </div>
-        <div class="dl-note">
-          Файл будет подписан SHA3-256. После скачивания проверьте подпись перед запуском.
+        <div class="dl-note" data-i18n="dl.note">
+          The file will be signed with SHA3-256. Verify the signature before running.
         </div>
-        <div class="no-file-notice" id="no-file-notice">
-          ⚠️ Файл <strong>tanegi.zip</strong> ещё не загружен администратором.<br>
-          Пожалуйста, ожидайте — файл скоро появится.
+        <div class="no-file-notice" id="no-file-notice" data-i18n="dl.notice">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> File <strong>tanegi.zip</strong> has not yet been uploaded by the administrator.<br>
+          Please wait — the file will appear soon.
         </div>
       </div>
     </div>
@@ -2240,32 +2284,32 @@ footer {
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <div class="footer-logo">⬡ TANEGI</div>
-        <div class="footer-tagline">
-          Анонимная P2P-сеть с тройным гибридным пост-квантовым шифрованием.
-          Написана на Rust. Beta-версия.
+        <div class="footer-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> TANEGI</div>
+        <div class="footer-tagline" data-i18n="footer.tagline">
+          Anonymous P2P network with triple hybrid post-quantum encryption.
+          Written in Rust. Beta version.
         </div>
       </div>
       <div>
-        <div class="footer-col-title">Разделы</div>
+        <div class="footer-col-title" data-i18n="footer.col1">Sections</div>
         <ul class="footer-links">
-          <li><a href="#features">Возможности</a></li>
-          <li><a href="#crypto">Криптография</a></li>
-          <li><a href="#architecture">Архитектура</a></li>
-          <li><a href="#privacy">Приватность</a></li>
+          <li><a href="#features" data-i18n="nav.features">Features</a></li>
+          <li><a href="#crypto" data-i18n="footer.crypto">Cryptography</a></li>
+          <li><a href="#architecture" data-i18n="footer.arch">Architecture</a></li>
+          <li><a href="#privacy" data-i18n="nav.privacy">Privacy</a></li>
         </ul>
       </div>
       <div>
-        <div class="footer-col-title">Сравнение</div>
+        <div class="footer-col-title" data-i18n="footer.col2">Compare</div>
         <ul class="footer-links">
           <li><a href="#compare">Tanegi vs Tor</a></li>
-          <li><a href="#performance">Производительность</a></li>
-          <li><a href="#start">Быстрый старт</a></li>
-          <li><a href="#download">Скачать</a></li>
+          <li><a href="#performance" data-i18n="perf.label">Performance</a></li>
+          <li><a href="#start" data-i18n="start.label">Quick Start</a></li>
+          <li><a href="#download" data-i18n="nav.download">Download</a></li>
         </ul>
       </div>
       <div>
-        <div class="footer-col-title">Технологии</div>
+        <div class="footer-col-title" data-i18n="footer.col3">Technologies</div>
         <ul class="footer-links">
           <li><a href="#">Kyber-1024 (NIST PQ)</a></li>
           <li><a href="#">ChaCha20-Poly1305</a></li>
@@ -2441,6 +2485,330 @@ const heroStatObs = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.5 });
 document.querySelector('.hero-stats') && heroStatObs.observe(document.querySelector('.hero-stats'));
+
+// ── i18n System ───────────────────────────────────────────────────────
+const i18n = {
+  en: {
+    'nav.features': 'Features',
+    'nav.crypto': 'Crypto',
+    'nav.network': 'Network',
+    'nav.privacy': 'Privacy',
+    'nav.vsTor': 'vs Tor',
+    'nav.download': 'Download',
+    'hero.sub': '<strong>Tanegi</strong> — anonymous P2P network with triple hybrid encryption:<br>Kyber-1024 (post-quantum) + ChaCha20-Poly1305 + Tanegi algorithm.<br>Onion routing 3–7 hops. Written in <strong>Rust</strong>.',
+    'hero.btn1': 'Download Tanegi',
+    'hero.btn2': 'Explore features →',
+    'about.label': 'About',
+    'about.title': 'Next-generation <span class="accent">Anonymity</span>',
+    'about.desc1': 'Tanegi is a decentralized P2P network with onion routing, written entirely in Rust. Unlike Tor, Tanegi uses post-quantum KEM (Kyber-1024) and a custom mathematical algorithm based on the 10958 number problem.',
+    'about.desc2': 'The Double Ratchet protocol (as in Signal) provides perfect forward secrecy in chat. Kademlia DHT organizes a distributed storage system with extended Reed-Solomon coding.',
+    'about.warning': '<strong style="color:#ffa657">Beta version.</strong> The project is under development. Do not use for protecting critical data in production.',
+    'feat.label': 'Features',
+    'feat.title': 'Full <span class="accent">Anonymity</span> Stack',
+    'feat.desc': 'Every component is designed from scratch with privacy and performance in mind.',
+    'feat.f1.title': 'Triple Hybrid Encryption',
+    'feat.f1.desc': 'Kyber-1024 (NIST PQ) + ChaCha20-Poly1305 + Tanegi algorithm. Application order is randomized to protect against cryptanalysis.',
+    'feat.f2.title': 'Onion Routing',
+    'feat.f2.desc': '3–7 hops with enforced /16 subnet diversity. Ed25519 verification of each node, ephemeral X25519 keys per hop.',
+    'feat.f3.title': 'Signal Protocol Chat',
+    'feat.f3.desc': 'Double Ratchet + X3DH. Perfect Forward Secrecy (PFS). Post-compromise security. Supports up to 1000 skipped keys.',
+    'feat.f4.title': 'SOCKS5 + HTTP Proxy',
+    'feat.f4.desc': 'RFC 1928 compatible SOCKS5 proxy on port 9050. HTTP/HTTPS proxy with CONNECT tunnel. UDP ASSOCIATE support.',
+    'feat.f5.title': 'Distributed Storage',
+    'feat.f5.desc': 'AES-256-GCM encryption + HKDF. Reed-Solomon codes (8+4). LZ4 compression. Default 3 GB per node.',
+    'feat.f6.title': 'Kill Switch + DNS Protection',
+    'feat.f6.desc': 'iptables kill switch on tunnel disconnect. DoH (RFC 8484) for DNS. Blocks 23+ trackers and ad domains. WebRTC leak prevention.',
+    'feat.f7.title': 'Kademlia DHT',
+    'feat.f7.desc': 'K-bucket size 20. 3 parallel lookups. Up to 100,000 items, 10 MB storage. TTL 24 hours. Sybil protection via PoW.',
+    'feat.f8.title': 'Cover Traffic + Garlic',
+    'feat.f8.desc': 'Adaptive cover traffic (10% of bandwidth). Garlic routing — message bundling for traffic analysis protection.',
+    'feat.f9.title': 'Written in Rust',
+    'feat.f9.desc': 'Tokio async runtime. Zero-copy operations. Full LTO. 2.6 MB binary. OsRng for all cryptography. Zeroize for key cleanup.',
+    'crypto.label': 'Cryptography',
+    'crypto.title': 'Encryption <span class="accent">Layers</span>',
+    'crypto.desc': 'Every message passes through three independent cryptographic layers.',
+    'crypto.p1': 'Perfect Forward Secrecy (PFS)',
+    'crypto.p2': 'Post-compromise security',
+    'crypto.p3': 'Constant-time comparison (ct_eq)',
+    'crypto.p4': 'OsRng for all key generation',
+    'crypto.p5': 'Zeroize — secure memory erasure',
+    'crypto.p6': 'HKDF + SHA3-256/512 key derivation',
+    'crypto.p7': 'Replay protection — HMAC-SHA3-256',
+    'crypto.p8': 'Quantum-resistant storage AES-256-GCM',
+    'arch.label': 'Architecture',
+    'arch.title': 'Packet <span class="accent">Journey</span>',
+    'arch.desc': 'Every packet goes through onion encryption and several independent nodes before reaching its destination.',
+    'arch.you': 'You',
+    'arch.guard': 'Guard',
+    'arch.middle': 'Middle',
+    'arch.exit': 'Exit',
+    'arch.internet': 'Internet',
+    'arch.hop1': 'Guard — stable, high bandwidth',
+    'arch.hop2': 'Middle — relay-only, no exit traffic',
+    'arch.hop3': 'Exit — voluntary, clearnet access',
+    'arch.c1.desc': 'TUI interface, CLI, circuit building, accounts',
+    'arch.c2.desc': 'DHT, transport, onion router, garlic',
+    'arch.c3.desc': 'Tanegi cipher, Kyber, hybrid KEM',
+    'arch.c4.desc': 'AES-GCM, Reed-Solomon, LZ4, DHT storage',
+    'arch.c5.desc': 'SOCKS5, HTTP proxy, DNS, exit node',
+    'priv.label': 'Privacy',
+    'priv.title': 'Zero <span class="accent">Leaks</span>',
+    'priv.desc': 'Multi-layer protection against deanonymization at every level of the stack.',
+    'priv.p1.title': 'Kill Switch',
+    'priv.p1.desc': 'iptables automatically blocks all traffic on VPN tunnel disconnect. Requires root. Protects against IP leaks.',
+    'priv.p2.title': 'Cover Traffic',
+    'priv.p2.desc': 'Adaptive generation of dummy traffic (10% of bandwidth). Protection against traffic analysis.',
+    'priv.p3.title': 'Tracker Blocking',
+    'priv.p3.desc': 'DNS blocking of google-analytics, doubleclick, facebook, Microsoft/Mozilla telemetry and 20+ other tracking domains.',
+    'priv.p4.title': 'DoH (DNS over HTTPS)',
+    'priv.p4.desc': 'RFC 8484. All DNS queries are encrypted. Fallback — DNS via Tanegi circuit. No DNS leaks.',
+    'priv.p5.title': 'WebRTC Blocking',
+    'priv.p5.desc': 'iptables rules block WebRTC STUN/TURN requests that could reveal the real IP address.',
+    'perf.label': 'Performance',
+    'perf.title': 'Speed Without <span class="accent">Compromise</span>',
+    'perf.desc': 'High bandwidth with full anonymity.',
+    'perf.c1.label': 'Download',
+    'perf.c1.desc': 'Maximum download speed',
+    'perf.c2.label': 'Upload',
+    'perf.c2.desc': 'Maximum upload speed',
+    'perf.c3.label': 'Relay',
+    'perf.c3.desc': 'Relay throughput',
+    'perf.c4.label': 'Connections',
+    'perf.c4.desc': 'Max simultaneous connections',
+    'perf.b1': 'ChaCha20-Poly1305 Encryption',
+    'perf.b2': 'DHT lookup latency',
+    'perf.b3': 'Circuit build time',
+    'perf.b4': 'Binary size (stripped, LTO)',
+    'perf.b5': 'Minimum RAM',
+    'cmp.label': 'Comparison',
+    'cmp.desc': 'What differentiates Tanegi from existing solutions.',
+    'cmp.th.feat': 'Feature',
+    'cmp.r1': 'Post-quantum cryptography',
+    'cmp.r2': 'Hybrid encryption',
+    'cmp.r2.tanegi': '✓ 3 algorithms',
+    'cmp.r2.tor': '1 layer',
+    'cmp.r2.i2p': '2 layers',
+    'cmp.r3': 'Signal protocol (Double Ratchet)',
+    'cmp.built-in': '✓ Built-in',
+    'cmp.r4': 'Kill Switch',
+    'cmp.plugin': 'Plugin',
+    'cmp.r5': 'Cover Traffic',
+    'cmp.adaptive': '✓ Adaptive',
+    'cmp.configurable': 'Configurable',
+    'cmp.r6': 'Built-in DHT',
+    'cmp.r7': 'Distributed storage',
+    'cmp.partial': 'Partial',
+    'cmp.r8': 'NAT Traversal (STUN)',
+    'cmp.r9': 'Garlic Routing',
+    'cmp.r10': 'Language',
+    'cmp.r11': 'Binary size',
+    'start.label': 'Quick Start',
+    'start.title': 'Up and running in <span class="accent">3 steps</span>',
+    'start.s1.title': 'Download and extract',
+    'start.s1.desc': 'Download <code style="color:var(--green)">tanegi.zip</code>, extract to a convenient location.',
+    'start.s2.title': 'Make executable',
+    'start.s2.desc': 'The binary requires execution permissions and root privileges for iptables.',
+    'start.s3.title': 'Configure SOCKS5 proxy',
+    'start.s3.desc': 'Configure applications (browser, curl) to use SOCKS5 proxy <code style="color:var(--green)">127.0.0.1:9050</code>.',
+    'start.s4.title': 'Additional flags',
+    'start.s4.desc': 'Enable enhanced privacy protection.',
+    'start.warning': '<strong>Root privileges</strong> are required for kill switch and iptables rules (Linux). Some features are not available on macOS/Windows.',
+    'dl.label': 'Download',
+    'dl.title': 'Get <span class="accent">Tanegi</span>',
+    'dl.desc': 'Compiled binary for Linux. Source code available for audit.',
+    'dl.subtitle': 'Anonymous P2P network with post-quantum encryption',
+    'dl.meta.lang': 'Language',
+    'dl.meta.platform': 'Platform',
+    'dl.meta.license': 'License',
+    'dl.meta.size': 'Size',
+    'dl.btn': 'Download tanegi.zip',
+    'dl.root': 'Root required',
+    'dl.note': 'The file will be signed with SHA3-256. Verify the signature before running.',
+    'dl.notice': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> File <strong>tanegi.zip</strong> has not yet been uploaded by the administrator.<br>Please wait — the file will appear soon.',
+    'footer.tagline': 'Anonymous P2P network with triple hybrid post-quantum encryption. Written in Rust. Beta version.',
+    'footer.col1': 'Sections',
+    'footer.col2': 'Compare',
+    'footer.col3': 'Technologies',
+    'footer.crypto': 'Cryptography',
+    'footer.arch': 'Architecture',
+  },
+  ru: {
+    'nav.features': 'Возможности',
+    'nav.crypto': 'Крипто',
+    'nav.network': 'Сеть',
+    'nav.privacy': 'Приватность',
+    'nav.vsTor': 'vs Tor',
+    'nav.download': 'Скачать',
+    'hero.sub': '<strong>Tanegi</strong> — анонимная P2P-сеть с тройным гибридным шифрованием:<br>Kyber-1024 (пост-квантовый) + ChaCha20-Poly1305 + алгоритм Tanegi.<br>Луковая маршрутизация 3–7 хопов. Написана на <strong>Rust</strong>.',
+    'hero.btn1': 'Скачать Tanegi',
+    'hero.btn2': 'Изучить возможности →',
+    'about.label': 'О проекте',
+    'about.title': 'Анонимность <span class="accent">нового поколения</span>',
+    'about.desc1': 'Tanegi — это децентрализованная P2P-сеть с луковой маршрутизацией, созданная полностью на Rust. В отличие от Tor, Tanegi использует пост-квантовый KEM (Kyber-1024) и собственный математический алгоритм, основанный на задаче числа 10958.',
+    'about.desc2': 'Протокол Double Ratchet (как в Signal) обеспечивает совершенную прямую секретность в чате. Kademlia DHT организует распределённую хранилищную систему с расширенным кодированием Reed-Solomon.',
+    'about.warning': '<strong style="color:#ffa657">Beta-версия.</strong> Проект находится в стадии разработки. Не использовать для защиты критически важных данных в production.',
+    'feat.label': 'Возможности',
+    'feat.title': 'Полный стек <span class="accent">анонимности</span>',
+    'feat.desc': 'Каждый компонент разработан с нуля с учётом приватности и производительности.',
+    'feat.f1.title': 'Тройное гибридное шифрование',
+    'feat.f1.desc': 'Kyber-1024 (NIST PQ) + ChaCha20-Poly1305 + алгоритм Tanegi. Порядок применения случайный для защиты от криптоанализа.',
+    'feat.f2.title': 'Луковая маршрутизация',
+    'feat.f2.desc': '3–7 хопов с принудительным разнообразием подсетей /16. Ed25519 верификация каждого узла, эфемерные ключи X25519 на каждый хоп.',
+    'feat.f3.title': 'Signal-протокол чата',
+    'feat.f3.desc': 'Double Ratchet + X3DH. Совершенная прямая секретность (PFS). Post-compromise security. Поддержка до 1000 пропущенных ключей.',
+    'feat.f4.title': 'SOCKS5 + HTTP прокси',
+    'feat.f4.desc': 'RFC 1928 совместимый SOCKS5 прокси на порту 9050. HTTP/HTTPS прокси с CONNECT туннелем. Поддержка UDP ASSOCIATE.',
+    'feat.f5.title': 'Распределённое хранилище',
+    'feat.f5.desc': 'AES-256-GCM шифрование + HKDF. Коды Reed-Solomon (8+4). LZ4 компрессия. По умолчанию 3 GB на узел.',
+    'feat.f6.title': 'Kill Switch + DNS защита',
+    'feat.f6.desc': 'iptables kill switch при разрыве туннеля. DoH (RFC 8484) для DNS. Блокировка 23+ трекеров и рекламных доменов. WebRTC leak prevention.',
+    'feat.f7.title': 'Kademlia DHT',
+    'feat.f7.desc': 'K-bucket size 20. 3 параллельных запроса. До 100 000 элементов, 10 MB хранилища. TTL 24 часа. Sybil защита через PoW.',
+    'feat.f8.title': 'Cover Traffic + Garlic',
+    'feat.f8.desc': 'Адаптивный cover traffic (10% от пропускной способности). Garlic routing — объединение сообщений для защиты от traffic analysis.',
+    'feat.f9.title': 'Написан на Rust',
+    'feat.f9.desc': 'Tokio async runtime. Zero-copy операции. Полный LTO. Бинарник 2.6 MB. OsRng для всей криптографии. Zeroize для очистки ключей.',
+    'crypto.label': 'Криптография',
+    'crypto.title': 'Слои <span class="accent">шифрования</span>',
+    'crypto.desc': 'Каждое сообщение проходит через три независимых криптографических слоя.',
+    'crypto.p1': 'Совершенная прямая секретность (PFS)',
+    'crypto.p2': 'Post-compromise security',
+    'crypto.p3': 'Constant-time сравнение (ct_eq)',
+    'crypto.p4': 'OsRng для всей генерации ключей',
+    'crypto.p5': 'Zeroize — безопасное стирание памяти',
+    'crypto.p6': 'HKDF + SHA3-256/512 key derivation',
+    'crypto.p7': 'Replay protection — HMAC-SHA3-256',
+    'crypto.p8': 'Квантово-устойчивое хранилище AES-256-GCM',
+    'arch.label': 'Архитектура',
+    'arch.title': 'Путь <span class="accent">пакета</span>',
+    'arch.desc': 'Каждый пакет проходит луковое шифрование и несколько независимых узлов, прежде чем достигнуть назначения.',
+    'arch.you': 'Вы',
+    'arch.guard': 'Guard',
+    'arch.middle': 'Middle',
+    'arch.exit': 'Exit',
+    'arch.internet': 'Интернет',
+    'arch.hop1': 'Guard — стабильный, высокая пропускная',
+    'arch.hop2': 'Middle — relay-only, без exit трафика',
+    'arch.hop3': 'Exit — добровольный, clearnet доступ',
+    'arch.c1.desc': 'TUI интерфейс, CLI, сборка цепочек, аккаунты',
+    'arch.c2.desc': 'DHT, транспорт, луковый роутер, garlic',
+    'arch.c3.desc': 'Tanegi cipher, Kyber, гибридный KEM',
+    'arch.c4.desc': 'AES-GCM, Reed-Solomon, LZ4, DHT-хранилище',
+    'arch.c5.desc': 'SOCKS5, HTTP proxy, DNS, exit node',
+    'priv.label': 'Приватность',
+    'priv.title': 'Нулевая <span class="accent">утечка</span>',
+    'priv.desc': 'Многоуровневая защита от деанонимизации на каждом уровне стека.',
+    'priv.p1.title': 'Kill Switch',
+    'priv.p1.desc': 'iptables автоматически блокирует весь трафик при разрыве VPN-туннеля. Требует root. Защищает от IP-утечек.',
+    'priv.p2.title': 'Cover Traffic',
+    'priv.p2.desc': 'Адаптивная генерация фиктивного трафика (10% пропускной способности). Защита от traffic analysis.',
+    'priv.p3.title': 'Блокировка трекеров',
+    'priv.p3.desc': 'DNS-блокировка google-analytics, doubleclick, facebook, telemetry Microsoft/Mozilla и 20+ других доменов слежки.',
+    'priv.p4.title': 'DoH (DNS over HTTPS)',
+    'priv.p4.desc': 'RFC 8484. Все DNS-запросы зашифрованы. Fallback — DNS через Tanegi-цепочку. Нет DNS-утечек.',
+    'priv.p5.title': 'WebRTC Blocking',
+    'priv.p5.desc': 'iptables правила блокируют WebRTC STUN/TURN запросы, которые могут раскрыть реальный IP-адрес.',
+    'perf.label': 'Производительность',
+    'perf.title': 'Скорость без <span class="accent">компромиссов</span>',
+    'perf.desc': 'Высокая пропускная способность при полной анонимности.',
+    'perf.c1.label': 'Загрузка',
+    'perf.c1.desc': 'Максимальная скорость скачивания',
+    'perf.c2.label': 'Отдача',
+    'perf.c2.desc': 'Максимальная скорость загрузки',
+    'perf.c3.label': 'Relay',
+    'perf.c3.desc': 'Пропускная способность ретрансляции',
+    'perf.c4.label': 'Соединений',
+    'perf.c4.desc': 'Максимум одновременных подключений',
+    'perf.b1': 'Шифрование ChaCha20-Poly1305',
+    'perf.b2': 'DHT lookup latency',
+    'perf.b3': 'Circuit build time',
+    'perf.b4': 'Binary size (stripped, LTO)',
+    'perf.b5': 'RAM минимум',
+    'cmp.label': 'Сравнение',
+    'cmp.desc': 'Что отличает Tanegi от существующих решений.',
+    'cmp.th.feat': 'Функция',
+    'cmp.r1': 'Пост-квантовая криптография',
+    'cmp.r2': 'Гибридное шифрование',
+    'cmp.r2.tanegi': '✓ 3 алгоритма',
+    'cmp.r2.tor': '1 слой',
+    'cmp.r2.i2p': '2 слоя',
+    'cmp.r3': 'Signal-протокол (Double Ratchet)',
+    'cmp.built-in': '✓ Встроен',
+    'cmp.r4': 'Kill Switch',
+    'cmp.plugin': 'Плагин',
+    'cmp.r5': 'Cover Traffic',
+    'cmp.adaptive': '✓ Адаптивный',
+    'cmp.configurable': 'Настраиваем',
+    'cmp.r6': 'Встроенный DHT',
+    'cmp.r7': 'Распределённое хранилище',
+    'cmp.partial': 'Частично',
+    'cmp.r8': 'NAT Traversal (STUN)',
+    'cmp.r9': 'Garlic Routing',
+    'cmp.r10': 'Язык',
+    'cmp.r11': 'Размер бинарника',
+    'start.label': 'Быстрый старт',
+    'start.title': 'Запуск за <span class="accent">3 шага</span>',
+    'start.s1.title': 'Скачайте и распакуйте',
+    'start.s1.desc': 'Скачайте <code style="color:var(--green)">tanegi.zip</code>, распакуйте в удобное место.',
+    'start.s2.title': 'Сделайте исполняемым',
+    'start.s2.desc': 'Бинарный файл требует права на исполнение и запуск от root для работы с iptables.',
+    'start.s3.title': 'Настройте SOCKS5 прокси',
+    'start.s3.desc': 'Укажите приложениям (браузер, curl) использовать SOCKS5 прокси <code style="color:var(--green)">127.0.0.1:9050</code>.',
+    'start.s4.title': 'Дополнительные флаги',
+    'start.s4.desc': 'Включите усиленную защиту приватности.',
+    'start.warning': 'Для работы kill switch и iptables-правил <strong>требуются права root</strong> (Linux). На macOS/Windows некоторые функции недоступны.',
+    'dl.label': 'Скачать',
+    'dl.title': 'Получить <span class="accent">Tanegi</span>',
+    'dl.desc': 'Скомпилированный бинарник для Linux. Исходный код доступен для аудита.',
+    'dl.subtitle': 'Анонимная P2P сеть с пост-квантовым шифрованием',
+    'dl.meta.lang': 'Язык',
+    'dl.meta.platform': 'Платформа',
+    'dl.meta.license': 'Лицензия',
+    'dl.meta.size': 'Размер',
+    'dl.btn': 'Скачать tanegi.zip',
+    'dl.root': 'Нужен root',
+    'dl.note': 'Файл будет подписан SHA3-256. После скачивания проверьте подпись перед запуском.',
+    'dl.notice': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Файл <strong>tanegi.zip</strong> ещё не загружен администратором.<br>Пожалуйста, ожидайте — файл скоро появится.',
+    'footer.tagline': 'Анонимная P2P-сеть с тройным гибридным пост-квантовым шифрованием. Написана на Rust. Beta-версия.',
+    'footer.col1': 'Разделы',
+    'footer.col2': 'Сравнение',
+    'footer.col3': 'Технологии',
+    'footer.crypto': 'Криптография',
+    'footer.arch': 'Архитектура',
+  }
+};
+
+let currentLang = localStorage.getItem('lang') || 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  const dict = i18n[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) {
+      el.innerHTML = dict[key];
+    }
+  });
+  if (lang === 'ru') {
+    document.body.classList.add('lang-ru');
+    document.getElementById('lang-btn').textContent = 'EN';
+    document.getElementById('lang-btn').classList.add('active-ru');
+  } else {
+    document.body.classList.remove('lang-ru');
+    document.getElementById('lang-btn').textContent = 'RU';
+    document.getElementById('lang-btn').classList.remove('active-ru');
+  }
+}
+
+function toggleLang() {
+  setLang(currentLang === 'en' ? 'ru' : 'en');
+}
+
+// Apply saved language on load
+if (currentLang !== 'en') {
+  setLang(currentLang);
+}
 </script>
 
 </body>
